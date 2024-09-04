@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeltaX.Core.Abstractions\DeltaX.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\DeltaX.Core.Common\DeltaX.Core.Common.csproj" />
+    <ProjectReference Include="..\DeltaX.ResultFluent\DeltaX.ResultFluent.csproj" />
+  </ItemGroup>
+
+</Project>

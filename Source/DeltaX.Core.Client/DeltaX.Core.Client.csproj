@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeltaX.Core.Abstractions\DeltaX.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\DeltaX.Core.Common\DeltaX.Core.Common.csproj" />
+    <ProjectReference Include="..\DeltaX.ResultFluent\DeltaX.ResultFluent.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,23 @@
+﻿@inherits LayoutComponentBase
+
+
+<RadzenComponents @rendermode="InteractiveAuto" />
+
+<RadzenLayout>
+    <RadzenHeader>
+        <HeaderLayout @rendermode="InteractiveAuto"></HeaderLayout>
+    </RadzenHeader>
+    <SidebarLayout @rendermode="InteractiveAuto"></SidebarLayout>
+    <RadzenBody>
+        <div class="rz-p-4">
+            @Body
+        </div>
+    </RadzenBody>
+    <RadzenFooter>
+    </RadzenFooter>
+</RadzenLayout>
+
+@code {
+    bool sidebar1Expanded = true;
+
+}

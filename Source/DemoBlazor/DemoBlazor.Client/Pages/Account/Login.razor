@@ -1,0 +1,130 @@
+﻿@page "/Account/Login"
+@using Microsoft.Extensions.Logging
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@inject ILogger log
+@inject AuthClientService auth
+@inject NotificationService notification
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.WebUtilities
+
+
+<PageTitle>Login</PageTitle>
+
+<RadzenCard class="rz-my-12 rz-mx-auto rz-p-4" style="max-width: 600px;">
+    <RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+
+        <RadzenStack>
+            <RadzenColumn>
+                <RadzenText TextStyle="TextStyle.Subtitle1">Login</RadzenText>
+            </RadzenColumn>
+
+            <RadzenFormField Text="Email">
+                <ChildContent>
+                    <RadzenTextBox Name="Email" @bind-Value=@model.Email AutoComplete="false" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="Email" Text="Email is required" Style="position: absolute" />
+                    <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Style="position: absolute" />
+                </Helper>
+            </RadzenFormField>
+
+            <RadzenFormField Text="Password">
+                <ChildContent>
+                    <RadzenPassword Name="Password" @bind-Value=@model.Password AutoComplete="false" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="Password" Text="PasswordRequired" />
+                </Helper>
+            </RadzenFormField>
+        </RadzenStack>
+
+        <RadzenRow JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center" class="rz-mt-4">
+            <a class="rz-link" @onclick=@OnRegister>Register as a new user</a>
+            <a class="rz-link" @onclick=@OnForgotPassword>Forgot password</a>
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Login"></RadzenButton>
+        </RadzenRow>
+
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+
+    [SupplyParameterFromQuery] string? ReturnUrl { get; set; }
+
+    record Model
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+    Model model = new Model();
+
+    protected override Task OnInitializedAsync()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        if (ReturnUrl == null && !uri.LocalPath.EndsWith("/Account/Login", StringComparison.OrdinalIgnoreCase))
+        {
+            ReturnUrl = uri.LocalPath;
+        }
+
+        Console.WriteLine("ReturnUrl: {0}", ReturnUrl);
+        return base.OnInitializedAsync();
+    }
+
+    async Task OnSubmit(Model arg)
+    {
+        var result = await auth.Login(new LoginRequest
+            {
+                Email = arg.Email,
+                Password = arg.Password,
+            }, true);
+
+        if (result.IsError)
+        {
+            foreach (var error in result.Errors)
+            {
+                notification.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = error.Message,
+                        Detail = error.Detail,
+                        Duration = 10000,
+                    });
+            }
+        }
+        else
+        {
+            notification.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = $"Login {arg.Email} con exito, return: {ReturnUrl}",
+                });
+
+
+            NavigationManager.NavigateTo(ReturnUrl ?? "/", true);
+        }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        notification.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = $"Los datos del formulario son incorrectos",
+            });
+
+    }
+
+    void OnRegister()
+    {
+        log.LogInformation($"-> Register");
+        var url = NavigationManager.GetUriWithQueryParameters("account/register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl });
+        NavigationManager.NavigateTo(url);
+    }
+
+    void OnForgotPassword()
+    {
+        log.LogInformation($"-> ForgotPassword");
+        var url = NavigationManager.GetUriWithQueryParameters("account/forgotPassword", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl });
+        NavigationManager.NavigateTo(url);
+    }
+}

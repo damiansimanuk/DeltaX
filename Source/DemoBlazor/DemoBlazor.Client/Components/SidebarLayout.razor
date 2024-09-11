@@ -1,0 +1,69 @@
+﻿@implements IDisposable
+@inject ClientState state
+@inject ThemeService ThemeService
+@inject NavigationManager NavigationManager
+
+<RadzenSidebar @bind-Expanded="@state.ShowSidebar">
+    <RadzenPanelMenu>
+        <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
+        <RadzenPanelMenuItem Text="Counter" Icon="counter_3" Path="counter" />
+        <RadzenPanelMenuItem Text="demoAuth" Icon="home" Path="demoAuth" />
+        <AuthorizeView>
+            <NotAuthorized>
+                <RadzenPanelMenuItem Text="Login" Icon="home" Path="account/login" />
+                <RadzenPanelMenuItem Text="Register" Icon="home" Path="account/register" />
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem" class="rz-p-sm-2">
+            <AuthorizeView>
+                <Authorized>
+                    <RadzenLabel Text="@context.User.Identity?.Name" />
+                    <form action="security/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="returnUrl" value="/" />
+                        <RadzenRow JustifyContent="JustifyContent.Stretch">
+                            <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Light" Text="Logout"></RadzenButton>
+                        </RadzenRow>
+                    </form>
+                </Authorized>
+            </AuthorizeView>
+        </RadzenStack>
+
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem" class="rz-p-sm-2">
+            <RadzenLabel Text="Change the current theme" />
+            <RadzenDropDown Name="ThemeDropDown" TValue="string" Value="@ThemeService.Theme"
+                            ValueChanged="@ChangeTheme"
+                            Data="@Themes.All"
+                            TextProperty=@nameof(Theme.Text)
+                            ValueProperty=@nameof(Theme.Value)>
+            </RadzenDropDown>
+        </RadzenStack>
+    </RadzenPanelMenu>
+</RadzenSidebar>
+
+@code {
+    IDisposable[] disposables = [];
+
+    protected override Task OnInitializedAsync()
+    {
+        disposables = new[]
+        {
+            state.Subscribe<SidebarVisibilityChanged>(e => StateHasChanged()),
+        };
+        return Task.CompletedTask;
+    }
+
+    void ChangeTheme(string value)
+    {
+        ThemeService.SetTheme(value);
+    }
+
+    public void Dispose()
+    {
+        foreach (var e in disposables)
+        {
+            e.Dispose();
+        }
+    }
+} 

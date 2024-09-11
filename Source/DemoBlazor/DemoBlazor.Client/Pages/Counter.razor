@@ -1,0 +1,58 @@
+﻿@page "/counter"
+@implements IDisposable
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@* @inject MediatorHubClient client *@
+@inject NotificationService notification
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<RadzenButton Click="@IncrementCount" Text="Click me"></RadzenButton>
+
+@code {
+    int currentCount = 0;
+    IDisposable[] disposables = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // await client.StartAsync();
+
+        // disposables = new[]
+        // {
+        //     client.Subscribe<IEvent>(OnString),
+        //     client.Subscribe<IEvent>(OnString),
+        // };
+    }
+
+    public void Dispose()
+    {
+        foreach (var e in disposables)
+        {
+            e.Dispose();
+        }
+    }
+
+
+    private void OnString(IDomainEvent @event)
+    {
+        Console.WriteLine(JsonSerializer.Serialize(@event));
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+        Console.WriteLine(currentCount);
+
+        notification.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Info,
+                Summary = "currentCount:" + currentCount,
+            });
+    }
+}

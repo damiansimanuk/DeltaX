@@ -1,0 +1,115 @@
+﻿@page "/Account/Register"
+@using Microsoft.Extensions.Logging
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@inject ILogger log
+@inject AuthClientService auth
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Registrar Usuario</PageTitle>
+
+<RadzenCard class="rz-my-12 rz-mx-auto rz-p-4" style="max-width: 600px;">
+    <RadzenTemplateForm TItem="Model" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+
+        <RadzenStack>
+            <RadzenColumn>
+                <RadzenText TextStyle="TextStyle.Subtitle1">Registrar Usuario</RadzenText>
+            </RadzenColumn>
+
+            <RadzenFormField Text="Email">
+                <ChildContent>
+                    <RadzenTextBox Name="Email" @bind-Value=@model.Email AutoComplete="false" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="Email" Text="Email is required" Style="position: absolute" />
+                    <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Style="position: absolute" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Password">
+                <ChildContent>
+                    <RadzenPassword Name="Password" @bind-Value=@model.Password AutoComplete="false" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="Password" Text="PasswordRequired" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Repeat Password">
+                <ChildContent>
+                    <RadzenPassword Name="RepeatPassword" @bind-Value=@model.RepeatPassword Style="width: 100%" AutoComplete="false" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="RepeatPassword" Text="Repeat your password" Style="position: absolute" />
+                    <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(model.RepeatPassword)) Value=@model.Password Component="RepeatPassword" Text="Passwords should be the same" Style="position: absolute" />
+                </Helper>
+            </RadzenFormField>
+        </RadzenStack>
+
+        <RadzenRow JustifyContent="JustifyContent.Right" AlignItems="AlignItems.Center" class="rz-mt-4">
+            <a class="rz-link" @onclick=@OnLogin>Login</a>
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Submit"></RadzenButton>
+        </RadzenRow>
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    [SupplyParameterFromQuery] string? ReturnUrl { get; set; }
+
+    record Model
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string RepeatPassword { get; set; }
+    }
+    Model model = new Model();
+
+    async Task OnSubmit(Model arg)
+    {
+        log.LogInformation($"Form submitted with values {JsonSerializer.Serialize(arg)}");
+
+        var result = await auth.Register(new RegisterRequest
+            {
+                Email = arg.Email,
+                Password = arg.Password,
+            });
+
+        if (result.IsError)
+        {
+            foreach (var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = error.Message,
+                        Detail = error.Detail,
+                        Duration = 10000,
+                    });
+            }
+        }
+        else
+        {
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = $"Usuario {arg.Email} registrado con exito",
+                });
+
+            NavigationManager.NavigateTo(ReturnUrl ?? "account/login", true);
+        }
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+        NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = $"Los datos del formulario son incorrectos",
+            });
+    }
+
+    void OnLogin()
+    {
+        log.LogInformation($"-> login");
+        var url = NavigationManager.GetUriWithQueryParameters("account/login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl });
+        NavigationManager.NavigateTo(url);
+    }
+}

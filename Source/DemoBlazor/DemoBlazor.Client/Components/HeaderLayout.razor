@@ -1,0 +1,15 @@
+﻿@using static DemoBlazor.Client.Components.SidebarLayout
+@inject ClientState state
+
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+    <RadzenSidebarToggle Click="@ChangeSidebarVisibility" />
+    <RadzenLabel Text="Main Layout cliente" />
+</RadzenStack>
+
+@code {
+    void ChangeSidebarVisibility()
+    {
+        state.ShowSidebar = !state.ShowSidebar;
+    }
+}

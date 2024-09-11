@@ -1,0 +1,11 @@
+﻿@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("RedirectToLogin: {0}", NavigationManager.Uri);
+        var url = NavigationManager.GetUriWithQueryParameters("account/login", new Dictionary<string, object?> { ["ReturnUrl"] = NavigationManager.Uri });
+        Console.WriteLine("Redirect to:{0}", url);
+        // NavigationManager.NavigateTo(url, false);
+    }
+}

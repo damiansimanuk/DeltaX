@@ -1,0 +1,38 @@
+﻿@page "/Account/Logout"
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+
+<PageTitle>Logout</PageTitle>
+
+<RadzenCard class="rz-my-12 rz-mx-auto rz-p-4" style="max-width: 600px;">
+
+    <RadzenColumn>
+        <RadzenText TextStyle="TextStyle.Subtitle1">Logout</RadzenText>
+    </RadzenColumn>
+
+    <form action="security/Logout" method="post">
+        <AntiforgeryToken />
+
+        <AuthorizeView>
+            Esta registrado como @(context.User.Identity?.Name), desea salir?
+        </AuthorizeView>
+
+        <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+
+        <RadzenRow JustifyContent="JustifyContent.Right" class="rz-mt-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Logout"></RadzenButton>
+        </RadzenRow>
+    </form>
+</RadzenCard>
+
+@code {
+    [SupplyParameterFromQuery] string? ReturnUrl { get; set; }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ReturnUrl ??= "/";
+        }
+        return Task.CompletedTask;
+    }
+}

@@ -19,9 +19,9 @@ public class EventBus
         }
     }
 
-    public IDisposable Subscribe<TEvent>(Action<TEvent> onNextMessage) where TEvent : IEvent
+    public IDisposable Subscribe<TE>(Action<TE> onNextMessage) where TE : IEvent
     {
-        return Subscribe(typeof(TEvent).Name, (e) => onNextMessage((TEvent)e));
+        return Subscribe(typeof(TE).Name, (e) => onNextMessage((TE)e));
     }
 
     public IDisposable SubscribeAll(Action<IEvent> onNextMessage)
@@ -31,14 +31,19 @@ public class EventBus
 
     public IDisposable Subscribe(string eventName, Action<IEvent> observer)
     {
-        if (!eventObservers.TryGetValue(eventName, out var observers))
+        lock (eventObservers)
         {
-            observers = new List<Action<IEvent>>();
-            eventObservers.TryAdd(eventName, observers);
-        }
+            Console.WriteLine("Try Subscribe " + eventName);
+            if (!eventObservers.TryGetValue(eventName, out var observers))
+            {
+                observers = new List<Action<IEvent>>();
+                eventObservers.TryAdd(eventName, observers);
+            }
 
-        observers.Add(observer);
-        SubscriptionAdded?.Invoke(this, eventName);
+            observers.Add(observer);
+            Console.WriteLine("observers count" + observers.Count());
+            SubscriptionAdded?.Invoke(this, eventName);
+        }
 
         return new ActionOnDispose(() => OnDisposeObserver(eventName, observer));
     }
@@ -55,21 +60,24 @@ public class EventBus
 
     public void SendMessage(params IEvent[] events)
     {
-        foreach (var domainEvent in events)
+        lock (eventObservers)
         {
-            if (eventObservers.TryGetValue(allMessages, out var observersAll))
+            foreach (var domainEvent in events)
             {
-                foreach (var observer in observersAll)
+                if (eventObservers.TryGetValue(allMessages, out var observersAll))
                 {
-                    observer?.Invoke(domainEvent);
+                    foreach (var observer in observersAll)
+                    {
+                        observer?.Invoke(domainEvent);
+                    }
                 }
-            }
 
-            if (eventObservers.TryGetValue(domainEvent.EventName, out var observers))
-            {
-                foreach (var observer in observers)
+                if (eventObservers.TryGetValue(domainEvent.EventName, out var observers))
                 {
-                    observer?.Invoke(domainEvent);
+                    foreach (var observer in observers)
+                    {
+                        observer?.Invoke(domainEvent);
+                    }
                 }
             }
         }

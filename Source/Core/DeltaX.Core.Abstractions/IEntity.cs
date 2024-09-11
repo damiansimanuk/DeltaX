@@ -5,7 +5,7 @@ public interface IEntity
 {
     DateTimeOffset? UpdatedAt { get; set; }
     DateTimeOffset? CreatedAt { get; set; }
-    IReadOnlyCollection<IEvent> GetDomainEvents();
+    IReadOnlyCollection<IDomainEvent> GetDomainEvents();
     void ClearDomainEvents();
 }
 

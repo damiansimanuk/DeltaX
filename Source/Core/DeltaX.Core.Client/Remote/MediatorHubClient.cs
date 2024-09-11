@@ -12,9 +12,11 @@ public class MediatorHubClient
     private HubConnection hub;
     private bool connected;
 
+    public const string EndpointName = "/signalr-mediator";
+
     public MediatorHubClient(Uri url)
     {
-        hub = new HubConnectionBuilder().WithUrl(url).Build();
+        hub = new HubConnectionBuilder().WithUrl(new Uri(url, EndpointName)).Build();
         events.SubscriptionAdded += OnSubscriptionAdded;
         events.SubscriptionRemoved += OnSubscriptionRemoved;
         hub.On<JsonElement>("OnNextMessage", OnNextMessage);
@@ -55,7 +57,7 @@ public class MediatorHubClient
         });
     }
 
-    public IDisposable Subscribe<TEvent>(Action<TEvent> onNextMessage) where TEvent : IEvent
+    public IDisposable Subscribe<TEvent>(Action<TEvent> onNextMessage) where TEvent : IDomainEvent
     {
         return events.Subscribe(onNextMessage);
     }
@@ -63,7 +65,7 @@ public class MediatorHubClient
     private void OnNextMessage(JsonElement notification)
     {
         //Console.WriteLine($"MediatorHubClient OnNextMessage {notification}");
-        var msg = RequestSerializer.Deserialize(notification) as IEvent;
+        var msg = RequestSerializer.Deserialize(notification) as IDomainEvent;
         events.SendMessage(msg!);
     }
 

@@ -4,3 +4,19 @@ GET {{DemoWebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{DemoWebApi_HostAddress}}/Auth/userInfo/
+Accept: application/json
+Bearer: eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic2ltYSBuYWRhIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiJkMWUyNzgxMC0wNTRhLTRjMGMtYjI2ZS03MTFmOTlmNDhmY2EiLCJleHAiOjE3MjYwNzQ0MDEsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE4OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE4OSJ9.kTzBTdJRBvk1-uAvlj7I4MTFAkZcP0NFr4zr-GRMb-o
+
+###
+
+GET {{DemoWebApi_HostAddress}}/Auth/login/
+{
+  "email": "sima nada",
+  "password": "string"
+}
+Accept: application/json
+
+
+

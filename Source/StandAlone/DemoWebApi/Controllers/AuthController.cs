@@ -1,6 +1,8 @@
 ﻿namespace DemoWebApi.Controllers;
 
 using DemoWebApi.Auth;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +14,17 @@ public class AuthController(AuthJwtService authJwtService) : ControllerBase
 
     [HttpPost]
     [Route("login")]
-    public ActionResult<JwtLoginResponse> Login([FromBody] LoginDto arg)
+    public ActionResult<JwtLoginResponse> Login(bool? useCookies, [FromBody] LoginDto arg)
     {
-        var res = authJwtService.Login(arg.Email, arg.Password);
+        var res = authJwtService.Login(arg.Email, arg.Password, out var principal);
         if (res != null)
         {
-            return Ok(res);
+            if (useCookies == true)
+            {
+                Console.WriteLine(" Signing in...");
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal!);
+            }
+            return res;
         }
 
         return BadRequest("Invalid Login");
@@ -26,8 +33,8 @@ public class AuthController(AuthJwtService authJwtService) : ControllerBase
     [Authorize]
     [HttpGet]
     [Route("userInfo")]
-    public ActionResult GetUserInfo()
+    public ActionResult<Dictionary<string, string>> GetUserInfo()
     {
-        return Ok(User.Claims.Select(c => c.ToString()).ToList());
+        return User.Claims.ToDictionary(c => c.Type, c => c.Value);
     }
 }

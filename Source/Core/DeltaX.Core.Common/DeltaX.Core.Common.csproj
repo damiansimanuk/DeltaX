@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DeltaX.Core.Abstractions\DeltaX.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\DeltaX.ResultFluent\DeltaX.ResultFluent.csproj" />
   </ItemGroup>
 
 </Project>

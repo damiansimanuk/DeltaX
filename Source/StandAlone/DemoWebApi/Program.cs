@@ -80,10 +80,13 @@ app.UseCors(builder => builder
     .AllowAnyHeader());
 
 app.UseHttpsRedirection();
+app.UsePathBase(app.Configuration.GetValue("RequestPathBase", "/demo/"));
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseStaticFiles();
+app.MapFallbackToFile("ui/index.html");
 
 app.Run();
 

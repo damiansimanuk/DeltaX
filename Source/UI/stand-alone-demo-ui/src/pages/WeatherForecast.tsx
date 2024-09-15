@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { Panel } from "primereact/panel";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useApi, useEntryPoint } from "~/api/context";
 import SubWeatherForecast from "../components/SubWeatherForecast";
+import { useApi } from "../api/context";
+import { Link } from "react-router-dom";
 
 
-export default function Index() {
+export default function WeatherForecast() {
     const api = useApi();
 
     const login = () => {
@@ -20,10 +20,12 @@ export default function Index() {
     return (
         <div>
 
+            <Link to="/">Home</Link>
+
             <Panel header="User Info">
                 <p>accessToken: {api.accessToken?.accessToken}</p>
                 {(api.userInfo?.data == null ? <p>Not logged in</p>
-                    : (Object.keys(api.userInfo?.data!).map(k => <p>{`key: ${k}, value: ${api.userInfo?.data![k]}`}</p>))
+                    : (Object.keys(api.userInfo?.data!).map(k => <p key={k}>{`key: ${k}, value: ${api.userInfo?.data![k]}`}</p>))
                 )}
                 <Button label="login" onClick={() => login()} ></Button>
             </Panel>

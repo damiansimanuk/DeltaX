@@ -46,6 +46,7 @@ builder.Services
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
+        //options.LoginPath = "/demo/ui/login";
     });
 // builder.Services
 //     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Namotion.Reflection; 
+using Namotion.Reflection;
 using NSwag.Generation.Processors;
 using Radzen;
 using System.Security.Claims;
 using DemoBlazor.Shared.Events;
 using System.Reflection;
 using YamlDotNet.Serialization;
+using NSwag.Generation.Processors.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,7 @@ builder.Services.AddOpenApiDocument(c =>
 {
     c.SchemaSettings.GenerateKnownTypes = true;
     c.DocumentProcessors.Add(new AddAdditionalTypeProcessorAssembly(typeof(TourCreated).Assembly));
-}); 
+});
 //builder.Services.AddSwaggerGen(c =>
 //{
 //    c.AddWebhook<PaymentNotification>("application/json");

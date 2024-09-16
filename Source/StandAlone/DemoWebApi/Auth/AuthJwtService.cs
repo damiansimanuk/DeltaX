@@ -17,10 +17,21 @@ public class AuthJwtService(IConfiguration configuration, AuthRepository authRep
     public int? GetUserIdIfValidCredential(string email, string password)
     {
         var userRecord = authRepository.GetUserRecord(null, email);
-        if (userRecord != null && SecretHash.Verify(password, userRecord.PasswordHash))
+        if (userRecord == null)
+        {
+            return null;
+        }
+
+        if(userRecord.PasswordHash == null)
         {
             return userRecord.UserId;
         }
+
+        if (SecretHash.Verify(password, userRecord.PasswordHash))
+        {
+            return userRecord.UserId;
+        }
+
         return null;
     }
 
@@ -52,7 +63,7 @@ public class AuthJwtService(IConfiguration configuration, AuthRepository authRep
             if (r.Permissions.Any())
             {
                 var permissions = string.Join(", ", r.Permissions);
-                claims.Add(new Claim("permission", $"role:{r.Name} {permissions}"));
+                claims.Add(new Claim("permission", $"role:{r.Name}, {permissions}"));
             }
         }
 

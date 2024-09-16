@@ -1,16 +1,38 @@
 namespace DemoWebApi.Database;
 using Dapper;
+using DemoWebApi.Auth;
 using DemoWebApi.Database.Entities;
-using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Identity;
 using NJsonSchema;
 using System.Data;
 
 public class AuthRepository(IDbConnection connection)
 {
-    public bool CreateUser(string fullName, string email, string passwordHash)
+    public bool CreateUser(string fullName, string email, string password)
     {
-        var affected = connection.Execute("insert into [User](FullName, Email, PasswordHash) values (@fullName, @email, @passwordHash)",
-            new { fullName, email, passwordHash });
+        var passwordHash = string.IsNullOrEmpty(password) ? null : SecretHash.Hash(password);
+        var sql = @"
+insert into [User] (FullName, Email, PasswordHash) 
+values (@fullName, @email, @passwordHash)
+;";
+        var affected = connection.Execute(sql, new { fullName, email, passwordHash });
+        return affected == 1;
+    }
+
+    public bool UpdateUser(int userId, string? fullName, string? email, string? password)
+    {
+        var passwordHash = string.IsNullOrEmpty(password) ? null : SecretHash.Hash(password);
+
+        var sql = @"
+UPDATE [User]
+SET 
+    [FullName] = COALESCE(@fullName, [FullName]),
+    [Email] = COALESCE(@email, [Email]),
+    [PasswordHash] = COALESCE(@passwordHash, [PasswordHash]),
+    [UpdatedAt] = SYSDATETIMEOFFSET()
+WHERE [UserId] = @userId;
+";
+        var affected = connection.Execute(sql, new { userId, fullName, email, passwordHash });
         return affected == 1;
     }
 
@@ -31,12 +53,11 @@ from [User] u where  u.[UserId] = @userId
 
 select r.*
 from [Role] r
-join [UserRole] ur on ur.[RoleId] = [RoleId] and ur.[UserId] = @userId
+join [UserRole] ur on ur.[RoleId] = r.[RoleId] and ur.[UserId] = @userId
  
 select p.* 
-from [Permission] p
-join [Role] r on r.[RoleId] = p.[RoleId]
-join [UserRole] ur on ur.[RoleId] = [RoleId] and ur.[UserId] = @userId 
+from [Permission] p 
+join [UserRole] ur on ur.[RoleId] = p.[RoleId] and ur.[UserId] = @userId 
 ";
 
         using var multi = connection.QueryMultiple(sql, new { userId });
@@ -115,7 +136,8 @@ WHEN NOT MATCHED THEN
         var sql = $@"
 MERGE INTO [Permission] AS T 
 USING (
-    Select [RoleId]=@roleId, [Value]=@value
+    SELECT {@roleId} AS [RoleId], [Value] 
+    FROM (VALUES {string.Join(",", permissions.Select(p => $"('{p}')"))}) AS P([Value])
 ) AS S 
 ON S.[RoleId] = T.[RoleId] AND s.[Value] = t.[Value] 
 WHEN NOT MATCHED THEN
@@ -124,10 +146,7 @@ WHEN NOT MATCHED THEN
 WHEN NOT MATCHED BY SOURCE AND [RoleId] = {roleId} THEN
     DELETE
 ;";
-
-        var items = permissions.Select(p => { return new { roleId, value = p }; }).ToList();
-
-        var affected = connection.Execute(sql, items);
+        var affected = connection.Execute(sql);
         return affected;
     }
 

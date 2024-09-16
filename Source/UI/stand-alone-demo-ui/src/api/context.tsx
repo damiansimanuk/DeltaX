@@ -5,10 +5,10 @@ import { OmitNever } from './request/request-builder';
 
 function createApiContext(options: { baseUrl: string, useCookies: boolean }) {
     let context = ApiRequest(options.baseUrl, options.useCookies)
-    const authReq = context.entryPoint("/Auth/login", 'post')
+    const authReq = context.entryPoint("/api/Auth/login", 'post')
     const auth = useWrapFetch(authReq.fetch)
     const weatherForecast = useWrapFetch(context.entryPoint("/WeatherForecast", 'get').fetch)
-    const userInfo = useWrapFetch(context.entryPoint("/Auth/userInfo", 'get').fetch)
+    const userInfo = useWrapFetch(context.entryPoint("/api/Auth/userInfo", 'get').fetch)
 
     const login = (body: typeof authReq.types.body) =>
         auth.fetch({ body, query: { useCookies: options.useCookies } })

@@ -4,7 +4,39 @@
  */
 
 export interface paths {
-    "/Auth/login": {
+    "/api/Auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_Register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/user/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Auth_UpdateUser"];
+        trace?: never;
+    };
+    "/api/Auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -20,7 +52,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/Auth/userInfo": {
+    "/api/Auth/userInfo": {
         parameters: {
             query?: never;
             header?: never;
@@ -34,6 +66,54 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Auth_GetRoleInfoList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Auth_ConfigRole"];
+        trace?: never;
+    };
+    "/api/Auth/role/{roleId}/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Auth_ConfigRolePermissions"];
+        trace?: never;
+    };
+    "/api/Auth/user/{userId}/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Auth_ConfigUserRoles"];
         trace?: never;
     };
     "/WeatherForecast": {
@@ -56,15 +136,49 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        RegisterArg: {
+            fullName?: string;
+            email?: string;
+            password?: string;
+        };
+        UpdateUserArg: {
+            fullName?: string | null;
+            email?: string | null;
+            password?: string | null;
+        };
         JwtLoginResponse: {
             tokenType?: string;
             accessToken?: string;
             /** Format: date-time */
             expiresIn?: string;
         };
-        LoginDto: {
+        LoginArg: {
             email?: string;
             password?: string;
+        };
+        UserInfo: {
+            /** Format: int32 */
+            userId?: number;
+            email?: string;
+            fullName?: string;
+            roles?: components["schemas"]["RoleInfo"][];
+        };
+        RoleInfo: {
+            /** Format: int32 */
+            roleId?: number;
+            name?: string;
+            displayName?: string;
+            permissions?: string[];
+        };
+        ConfigRoleArg: {
+            name?: string;
+            displayName?: string;
+        };
+        ConfigRolePermissionsArg: {
+            permissions?: string[];
+        };
+        ConfigUserRolesArg: {
+            roleIds?: number[];
         };
         WeatherForecast: {
             /** Format: date */
@@ -84,6 +198,54 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    Auth_Register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterArg"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                };
+            };
+        };
+    };
+    Auth_UpdateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserArg"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                };
+            };
+        };
+    };
     Auth_Login: {
         parameters: {
             query?: {
@@ -95,7 +257,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["LoginDto"];
+                "application/json": components["schemas"]["LoginArg"];
             };
         };
         responses: {
@@ -123,9 +285,99 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        [key: string]: string;
-                    };
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+        };
+    };
+    Auth_GetRoleInfoList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleInfo"][];
+                };
+            };
+        };
+    };
+    Auth_ConfigRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfigRoleArg"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                };
+            };
+        };
+    };
+    Auth_ConfigRolePermissions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                roleId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfigRolePermissionsArg"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                };
+            };
+        };
+    };
+    Auth_ConfigUserRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfigUserRolesArg"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
                 };
             };
         };

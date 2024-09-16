@@ -25,7 +25,7 @@ export default function WeatherForecast() {
             <Panel header="User Info">
                 <p>accessToken: {api.accessToken?.accessToken}</p>
                 {(api.userInfo?.data == null ? <p>Not logged in</p>
-                    : (Object.keys(api.userInfo?.data!).map(k => <p key={k}>{`key: ${k}, value: ${api.userInfo?.data![k]}`}</p>))
+                    : (JSON.stringify(api.userInfo?.data, null, 4))
                 )}
                 <Button label="login" onClick={() => login()} ></Button>
             </Panel>

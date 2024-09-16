@@ -1,17 +1,8 @@
 
-import { createBrowserRouter, RouterProvider, Link, Navigate } from "react-router-dom";
-import WeatherForecast from "./pages/WeatherForecast";
-import { useApi } from "./api/context";
+import { createBrowserRouter, RouterProvider, Link } from "react-router-dom";
+import WeatherForecast from "./pages/WeatherForecast"; 
+import { ProtectedRoute } from "./security/protected-route";
 
-
-export function ProtectedRoute(props: React.PropsWithChildren<{ redirectPath?: string | undefined, permissions?: string[] | undefined }>) {
-    var api = useApi();
-
-    if (props.permissions && !api.userInfo.data) {
-        return <Navigate to={props.redirectPath ?? "/landing"} replace />;
-    }
-    return props.children;
-}
 
 export const router = createBrowserRouter(
     [

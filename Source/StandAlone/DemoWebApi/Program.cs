@@ -10,6 +10,11 @@ using System.Text;
 using System.Reflection;
 using Namotion.Reflection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using DbUp;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using Microsoft.AspNetCore.Connections;
+using DemoWebApi.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +67,15 @@ builder.Services
 //         };
 //     });
 
+var connectionString = builder.Configuration.GetConnectionString("DbSqlServer")
+    ?? throw new InvalidOperationException("Connection string 'DbSqlServer' not found.");
+
+builder.Services.AddScoped<IDbConnection>(e => new SqlConnection(connectionString));
+builder.Services.AddScoped<AuthRepository>();
+
+// DB Migration
+Migration.PerformUpgrade(connectionString);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -75,7 +89,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors(builder => builder
     .WithOrigins("http://127.0.0.1:4200", "http://localhost:5173")
     .AllowCredentials()
-    // .AllowAnyOrigin()
     .AllowAnyMethod()
     .AllowAnyHeader());
 
@@ -86,29 +99,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.UseStaticFiles();
-app.MapFallbackToFile("ui/index.html");
+
+//app.MapGroup("/demo/ui").MapFallbackToFile("index.html");
 
 app.Run();
-
-
-public sealed class AddAdditionalTypeProcessorAssembly : IDocumentProcessor
-{
-    private List<ContextualType> contextualTypes;
-
-    public AddAdditionalTypeProcessorAssembly(params Assembly[] assemblies)
-    {
-        contextualTypes = assemblies
-            .SelectMany(t => { try { return t.GetTypes(); } catch { return []; } })
-            .Select(t => t.ToContextualType())
-            .Distinct()
-            .ToList();
-    }
-
-    public void Process(DocumentProcessorContext context)
-    {
-        foreach (var type in contextualTypes)
-        {
-            context.SchemaGenerator.Generate(type, context.SchemaResolver);
-        }
-    }
-}

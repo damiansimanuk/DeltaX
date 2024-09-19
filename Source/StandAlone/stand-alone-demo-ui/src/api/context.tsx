@@ -20,8 +20,12 @@ function createApiContext(options: { baseUrl: string, useCookies: boolean }) {
 
     return {
         context,
-        login,
-        accessToken: auth.data,
+        auth: {
+            login,
+            data: auth.data,
+            error: auth.error,
+            isLoading: auth.isLoading,
+        },
         userInfo,
         weatherForecast,
     }
@@ -70,7 +74,7 @@ export function useWrapFetch<To, Tr>(fetchFunc: ((o: To) => Promise<Tr>)) {
             }).catch(e => {
                 setData(undefined);
                 setLoading(false);
-                setError(e)
+                setError(`${e}`)
             })
     }
     return { isLoading, data, error, fetch }

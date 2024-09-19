@@ -9,6 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
+public record RegisterArg(string FullName, string Email, string Password);
+public record UpdateUserArg(string? FullName, string? Email, string? Password);
+public record LoginArg(string Email, string Password);
+public record ConfigRoleArg(string Name, string DisplayName);
+public record ConfigRolePermissionsArg(string[] Permissions);
+public record ConfigUserRolesArg(int[] RoleIds);
+
 [ApiController]
 [Route("/api/[controller]")]
 public class AuthController(AuthJwtService authJwtService, AuthRepository authRepository) : ControllerBase
@@ -110,9 +117,4 @@ public class AuthController(AuthJwtService authJwtService, AuthRepository authRe
     }
 }
 
-public record RegisterArg(string FullName, string Email, string Password);
-public record UpdateUserArg(string? FullName, string? Email, string? Password);
-public record LoginArg(string Email, string Password);
-public record ConfigRoleArg(string Name, string DisplayName);
-public record ConfigRolePermissionsArg(string[] Permissions);
-public record ConfigUserRolesArg(int[] RoleIds);
+

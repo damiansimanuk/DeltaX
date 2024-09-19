@@ -1,27 +1,15 @@
 ﻿namespace DeltaX.ResultFluent;
 
-public class Result<T>
+
+public class Result<T> : Result
 {
     public T? Value { get; init; }
-    public Error[] Errors { get; init; } = [];
-    public Error? FirstError => IsError ? Errors[0] : null;
-    public bool IsSuccess { get; init; }
-    public bool IsError { get; init; }
 
     public Result() { }
 
-    public Result(T? value, params Error[] errors)
+    public Result(T? value, params Error[] errors) : base(errors)
     {
-        if (errors is not null && errors.Length > 0)
-        {
-            IsError = true;
-            Errors = errors.ToArray();
-        }
-        else
-        {
-            IsSuccess = true;
-            Value = value;
-        }
+        Value = value;
     }
 
     public static implicit operator Result<T>(T v) => Result.Success(v);

@@ -1,7 +1,27 @@
 ﻿namespace DeltaX.ResultFluent;
 
-public static class Result
+public class Result
 {
+    public Error[] Errors { get; init; } = [];
+    public Error? FirstError => IsError ? Errors[0] : null;
+    public bool IsSuccess { get; init; }
+    public bool IsError { get; init; }
+
+    public Result() { }
+
+    public Result(params Error[] errors)
+    {
+        if (errors is not null && errors.Length > 0)
+        {
+            IsError = true;
+            Errors = errors.ToArray();
+        }
+        else
+        {
+            IsSuccess = true;
+        }
+    }
+
     public static readonly ResultSuccess ResultSuccess = new();
 
     public static Result<T> Success<T>(Func<T> successProcessor)

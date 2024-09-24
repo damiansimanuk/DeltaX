@@ -12,32 +12,28 @@ using Microsoft.EntityFrameworkCore;
 public class GetProductRequestHandler(
     ECommerceDbContext dbContext,
     MapperService mapper
-    ) : IRequestHandler<GetProductRequest, Pagination<ProductDto>>
+    ) : IRequestHandler<GetProductListRequest, Pagination<ProductDto>>
 {
-    public async Task<Pagination<ProductDto>> Handle(GetProductRequest request, CancellationToken cancellationToken)
+    public async Task<Pagination<ProductDto>> Handle(GetProductListRequest request, CancellationToken cancellationToken)
     {
-        var query = dbContext.Set<Product>().Include(e => e.Categories).AsQueryable();
+        var query = dbContext.Set<Product>()
+            .Include(e => e.Categories)
+            .Include(e => e.Seller)
+            .Include(e => e.Details)
+            .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(request.filterText))
+        if (!string.IsNullOrWhiteSpace(request.FilterText))
         {
-            query = query.Where(p => p.Name.Contains(request.filterText)
-                || p.Categories.Any(c => c.Name.Contains(request.filterText)));
+            query = query.Where(p => p.Name.Contains(request.FilterText)
+                || p.Categories.Any(c => c.Name.Contains(request.FilterText)));
         }
 
+        var pagination = new Pagination(request.RowsPerPage, request.RowsOffset, request.Page);
         var count = await query.CountAsync();
         var result = await query
-            .Skip(request.RowsOffset)
-            .Take(request.RowsPerPage)
-            .ToListAsync();
-
-        var res = new Pagination<Product>(
-            result,
-            count,
-            request.RowsPerPage,
-            request.RowsOffset,
-            request.Page
-        );
-
-        return mapper.ToDto(res);
+            .Skip(pagination.RowsOffset)
+            .Take(pagination.RowsPerPage)
+            .ToListAsync(cancellationToken);
+        return mapper.ToDto(pagination.Load(result, count));
     }
 }

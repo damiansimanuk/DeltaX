@@ -28,7 +28,7 @@ export function PageRegisterForm() {
         <form onSubmit={onSubmit}>
             <Card className="p-fluid mx-0 mt-0 sm:mt-5 sm:mx-auto sm:max-w-30rem relative" footer={footer} header={header}>
 
-                <Spinner loading={request.isLoading || "false"} />
+                <Spinner loading={request.isLoading} />
 
                 <div className="p-fluid">
                     <Controller control={control} name='email' defaultValue=''
@@ -41,13 +41,15 @@ export function PageRegisterForm() {
                                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                 message: "Invalid email address"
                             }
-                        }} render={({ field, fieldState }) => (<>
+                        }}
+                        render={({ field, fieldState }) => (<>
                             <span className="p-float-label mt-5">
                                 <InputText id={field.name} {...field} autoComplete='off' type='email' />
                                 <label htmlFor="email">Email</label>
                             </span>
                             <small className='p-error' hidden={!fieldState.invalid}>{fieldState.error?.message}</small>
-                        </>)} />
+                        </>)}
+                    />
 
                     <Controller control={control} name='password' defaultValue=''
                         rules={{
@@ -63,7 +65,8 @@ export function PageRegisterForm() {
                                 <label htmlFor="password">Password</label>
                             </span>
                             <small className='p-error' hidden={!fieldState.invalid}>{fieldState.error?.message}</small>
-                        </>)} />
+                        </>)}
+                    />
 
                     <Controller control={control} name='confirmPassword' defaultValue=''
                         rules={{
@@ -80,7 +83,8 @@ export function PageRegisterForm() {
                                 <label htmlFor="confirmPassword">Confirm Password</label>
                             </span>
                             <small className='p-error' hidden={!fieldState.invalid}>{fieldState.error?.message}</small>
-                        </>)} />
+                        </>)}
+                    />
 
                     <div className='pt-3' hidden={request.errors === undefined || request.isLoading}>
                         {(request.errors?.map((e, i) => <p key={i} className='p-error p-0 m-0 text-sm'>{e.message}</p>))}

@@ -1,4 +1,5 @@
 ﻿namespace DeltaX.Core.Common;
+
 public record Pagination
 {
     public int RowsPerPage { get; init; } = 10;
@@ -7,9 +8,9 @@ public record Pagination
 
     public Pagination() { }
 
-    public Pagination(int rowsPerPage, int? rowsOffset = null, int? page = null)
+    public Pagination(int? rowsPerPage, int? rowsOffset = null, int? page = null)
     {
-        RowsPerPage = rowsPerPage;
+        RowsPerPage = rowsPerPage ?? 10;
         if (rowsOffset.HasValue)
         {
             RowsOffset = rowsOffset.Value;

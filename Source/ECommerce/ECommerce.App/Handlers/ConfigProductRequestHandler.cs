@@ -9,6 +9,7 @@ using ECommerce.Shared.Contracts;
 using ECommerce.Shared.Entities;
 using ECommerce.Shared.Events;
 using MediatR;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 public class ConfigProductRequestHandler(
@@ -52,17 +53,29 @@ public class ConfigProductRequestHandler(
             })
             .ToList();
 
-        var product = new Product
+        var product = dbContext.Set<Product>().Include(e => e.Categories)
+            .FirstOrDefault(e => e.Name == request.Name && e.SellerId == request.SellerId);
+
+        if (product == null)
         {
-            Name = request.Name,
-            Description = request.Description,
-            Seller = seller,
-            Categories = [.. existentCategories, .. newsCategories],
-            Details = details,
-            //UserId = authorization.CurrentUser.Identifier,
-        };
+            product = new Product
+            {
+                Name = request.Name,
+                Description = request.Description,
+                Seller = seller,
+                Categories = [.. existentCategories, .. newsCategories],
+                Details = details,
+            };
+        }
+        else
+        {
+            product.Description = request.Description;
+            product.Categories = [.. existentCategories, .. newsCategories];
+            product.Details = details;
+        }
 
         dbContext.AddDomainEvent(() => new ProductCreated(product.Id, product.Name, product.Description));
+        dbContext.AddRange(newsCategories);
         dbContext.Add(product);
 
         await dbContext.SaveChangesAsync(cancellationToken);

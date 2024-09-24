@@ -8,7 +8,8 @@ public record ConfigProductRequest(
     string Name,
     string Description,
     string[] Categories,
-    ConfigProductDetailDto[] Details) : IRequest<Result<ProductDto>>;
+    ConfigProductDetailDto[] Details
+    ) : IRequest<Result<ProductDto>>;
 
 public record ConfigProductDetailDto(
     string ImageUrl,

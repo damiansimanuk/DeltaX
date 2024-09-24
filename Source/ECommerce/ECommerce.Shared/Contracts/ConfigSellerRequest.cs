@@ -6,4 +6,5 @@ using MediatR;
 public record ConfigSellerRequest(
     string Name,
     string Email,
-    string PhoneNumber) : IRequest<Result<SellerDto>>;
+    string PhoneNumber
+    ) : IRequest<Result<SellerDto>>;

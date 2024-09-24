@@ -12,9 +12,9 @@ using Microsoft.EntityFrameworkCore;
 public class GetSellerRequestHandler(
     ECommerceDbContext dbContext,
     MapperService mapper
-    ) : IRequestHandler<GetSellerRequest, Pagination<SellerDto>>
+    ) : IRequestHandler<GetSellerListRequest, Pagination<SellerDto>>
 {
-    public async Task<Pagination<SellerDto>> Handle(GetSellerRequest request, CancellationToken cancellationToken)
+    public async Task<Pagination<SellerDto>> Handle(GetSellerListRequest request, CancellationToken cancellationToken)
     {
         var query = dbContext.Set<Seller>().Include(e => e.Users).AsQueryable();
 
@@ -23,20 +23,12 @@ public class GetSellerRequestHandler(
             query = query.Where(p => p.Users.Any(c => c.Id == request.userId));
         }
 
+        var pagination = new Pagination(request.RowsPerPage, request.RowsOffset, request.Page);
         var count = await query.CountAsync();
         var result = await query
-            .Skip(request.RowsOffset)
-            .Take(request.RowsPerPage)
+            .Skip(pagination.RowsOffset)
+            .Take(pagination.RowsPerPage)
             .ToListAsync();
-
-        var res = new Pagination<Seller>(
-            result,
-            count,
-            request.RowsPerPage,
-            request.RowsOffset,
-            request.Page
-        );
-
-        return mapper.ToDto(res);
+        return mapper.ToDto(pagination.Load(result, count));
     }
 }

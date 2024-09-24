@@ -8,11 +8,11 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/v1/[controller]")]
 public class ProductController(IMediator mediator) : ControllerBase
 {
     [HttpGet("productList")]
-    public async Task<Pagination<ProductDto>> GetProduct([FromQuery] GetProductRequest request)
+    public async Task<Pagination<ProductDto>> GetProduct([FromQuery] GetProductListRequest request)
     {
         return await mediator.Send(request);
     }
@@ -26,16 +26,16 @@ public class ProductController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("sellerList")]
-    public async Task<Pagination<SellerDto>> GetProduct([FromQuery] GetSellerRequest request)
+    public async Task<Pagination<SellerDto>> GetProduct([FromQuery] GetSellerListRequest request)
     {
         return await mediator.Send(request);
     }
 
     [HttpPost("seller")]
-    public async Task<Result<SellerDto>> ConfigSeller(ConfigSellerRequest request)
+    [ProducesResponseType<SellerDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Error[]>(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<SellerDto>> ConfigSeller(ConfigSellerRequest request)
     {
-        return await mediator.InvokeAsync(request);
+        return mediator.RequestAsync(request);
     }
-
-
 }

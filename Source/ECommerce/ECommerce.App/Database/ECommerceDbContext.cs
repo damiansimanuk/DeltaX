@@ -45,7 +45,7 @@ public class ECommerceDbContext(DbContextOptions<ECommerceDbContext> options, Ev
         {
             b.ToTable(nameof(Product), SCHEMA, referenceOnly);
             b.HasKey(s => s.Id);
-            b.HasOne(s => s.Seller).WithMany(o => o.Products);
+            b.HasOne(s => s.Seller).WithMany(o => o.Products).HasForeignKey(s => s.SellerId);
             b.HasMany(s => s.Categories).WithMany();
             b.Property(s => s.Active).HasDefaultValue(true);
         });

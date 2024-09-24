@@ -1,7 +1,10 @@
 ﻿namespace DeltaX.Core.Common;
 
-public record Pagination<TResult> : Pagination
+public record Pagination<TResult>
 {
+    public int RowsPerPage { get; init; } = 10;
+    public int RowsOffset { get; init; }
+    public int Page { get; init; } = 1;
     public int RowsCount { get; init; }
     public List<TResult> Items { get; init; } = null!;
     public int Pages { get; init; } = 1;
@@ -17,8 +20,19 @@ public record Pagination<TResult> : Pagination
         : this(items, rowsCount, pagination.RowsPerPage, pagination.RowsOffset, pagination.Page) { }
 
     public Pagination(List<TResult> items, int rowsCount, int rowsPerPage, int? rowsOffset, int? page)
-        : base(rowsPerPage, rowsOffset, page)
     {
+        RowsPerPage = rowsPerPage;
+        if (rowsOffset.HasValue)
+        {
+            RowsOffset = rowsOffset.Value;
+            Page = page ?? ((rowsOffset.Value / RowsPerPage) + 1);
+        }
+        else if (page.HasValue)
+        {
+            Page = page.Value;
+            RowsOffset = rowsOffset ?? ((page.Value - 1) * RowsPerPage);
+        }
+
         RowsCount = rowsCount;
         Items = items ?? new();
         Pages = 1 + ((rowsCount == 0 ? 0 : rowsCount - 1) / rowsPerPage);

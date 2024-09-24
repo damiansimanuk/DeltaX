@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\DeltaX.Core.Abstractions\DeltaX.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.Core.Client\DeltaX.Core.Client.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.Core.Common\DeltaX.Core.Common.csproj" />
+    <ProjectReference Include="..\..\Core\DeltaX.ResultFluent\DeltaX.ResultFluent.csproj" />
+  </ItemGroup>
+
+</Project>

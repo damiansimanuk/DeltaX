@@ -1,0 +1,20 @@
+ .input-file>input {
+     height: 0;
+     width: 0;
+     opacity: 0;
+ }
+
+ .input-file:has(> input:focus) {
+     /* background-color: rgba(183, 183, 183, 0.116);
+     border-color: var(--primary-color); */
+ }
+
+ .input-file:has(> input:focus) .empty-file,
+ .input-file:hover .empty-file  {
+     background-color: rgba(183, 183, 183, 0.116);
+     border-color: var(--primary-color);
+ }
+
+ .input-file .empty-file {
+     border-color: var(--gray-500);
+ }

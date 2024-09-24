@@ -9,4 +9,4 @@ public record CreateTourRequest(
     bool Exception,
     string Name,
     string Description)
-    : RequestBase<TourDto>, IRequest<Result<TourDto>>;
+    : IRequest<Result<TourDto>>;

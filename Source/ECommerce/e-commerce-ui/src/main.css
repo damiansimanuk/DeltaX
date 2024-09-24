@@ -1,0 +1,80 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+.main-container {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: min-content auto min-content;
+  grid-template-areas:
+    "container-header"
+    "container-main"
+    "container-footer";
+
+  &>header {
+    grid-area: container-header;
+    padding: 0.4rem;
+    background-color: black;
+  }
+
+  &>main.container {
+    grid-area: container-main;
+    position: relative;
+    height: 100%;
+    padding: 0.4rem;
+    overflow: auto;
+    overflow-y: auto;
+  }
+
+  &>footer {
+    grid-area: container-footer;
+    background-color: var(--surface-50);
+    padding: 0.4rem;
+    color: var(--text-color);
+    bottom: 0;
+    z-index: 1;
+    width: 100%;
+  }
+}
+
+.p-card-body,
+.p-card-content,
+.p-card-footer {
+  padding-top: 0 !important;
+}
+
+.p-checkbox>label {
+  user-select: none;
+  cursor: pointer;
+}
+
+
+.p-datatable {
+  .p-datatable-wrapper[style*="max-height"] {
+    height: 100vh;
+  }
+
+  .p-datatable-header {
+    /* padding: 1rem 1rem; */
+    padding: 0;
+  }
+
+  .p-paginator {
+    /* padding: 0.5rem 1rem; */
+    padding: 0;
+  }
+}
+
+button.p-button-icon-only.p-button-rounded {
+  height: 2.2rem;
+  width: 2.2rem;
+}
+
+.p-panel .p-panel-header,
+.p-panel .p-panel-content,
+.p-panel .p-panel-footer {
+  padding: 0.6rem !important;
+}

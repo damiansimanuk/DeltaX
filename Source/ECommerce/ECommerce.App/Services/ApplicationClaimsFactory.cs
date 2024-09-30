@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.App.Services;
 
 using ECommerce.App.Database;
-using ECommerce.App.Database.Entities;
+using ECommerce.App.Database.Entities.Security;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -40,7 +40,7 @@ public class ApplicationClaimsFactory(
         var roles = securityDb.Roles.Where(r => roleIds.Contains(r.Id)).ToList();
         var rolesClaims = securityDb.RoleClaims.Where(rc => roles.Select(r => r.Id).Contains(rc.RoleId)).ToList();
         var userClaims = securityDb.UserClaims.Where(rc => rc.UserId == userId).Select(e => e.ToClaim()).ToList();
-        var customClaims = new[] { "line", "machines", "permissions" };
+        var customClaims = new[] { "resource", "path", "action", "permission", "permissions" };
 
         result.AddRange(userClaims.Where(c => !customClaims.Contains(c.Type)));
         var permUserClaim = JoinPermissionClaims(userClaims);
@@ -65,23 +65,22 @@ public class ApplicationClaimsFactory(
         return result;
     }
 
+    /// <summary>
+    /// return claim like `resource:machineId:1 Justify Edit` 
+    /// </summary>
+    /// <param name="claims"></param>
+    /// <returns></returns>
     private Claim? JoinPermissionClaims(IEnumerable<Claim> claims)
     {
+        var customClaims = new[] { "action", "permission", "permissions" };
         var values = new List<string>();
 
-        var line = claims.FirstOrDefault(c => c.Type == "line")?.Value;
-        if (!string.IsNullOrEmpty(line))
+        foreach (var resource in claims.Where(c => c.Type == "resource").Select(e => e.Value))
         {
-            values.Add($"l:{line}");
+            values.Add($"resource:{resource}");
         }
 
-        var machines = claims.FirstOrDefault(c => c.Type == "machines")?.Value?.Split(' ');
-        if (machines?.Any() == true)
-        {
-            values.AddRange(machines.Where(m => !string.IsNullOrEmpty(m)).Select(m => $"m:{m}"));
-        }
-
-        var permissions = claims.FirstOrDefault(c => c.Type == "permissions")?.Value?.Split(' ');
+        var permissions = claims.Where(c => customClaims.Contains(c.Type)).SelectMany(e => e.Value.Split(' ')).ToList();
         if (permissions?.Any() == true)
         {
             values.AddRange(permissions.Where(p => !string.IsNullOrEmpty(p)));

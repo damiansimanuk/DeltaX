@@ -2,8 +2,8 @@ namespace ECommerce.App.Controllers;
 
 using DeltaX.Core.Common;
 using DeltaX.ResultFluent;
-using ECommerce.Shared.Contracts;
-using ECommerce.Shared.Entities;
+using ECommerce.Shared.Contracts.Product;
+using ECommerce.Shared.Entities.Product;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,8 +2,12 @@
 
 using DeltaX.Core.Common;
 using DeltaX.Core.Hosting.Database;
-using ECommerce.App.Database.Entities;
-using ECommerce.Shared.Entities;
+using ECommerce.App.Database.Entities.Buys;
+using ECommerce.App.Database.Entities.Product;
+using ECommerce.App.Database.Entities.Security;
+using ECommerce.Shared.Entities.Buys;
+using ECommerce.Shared.Entities.Product;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 /*
@@ -22,7 +26,7 @@ public class ECommerceDbContext(DbContextOptions<ECommerceDbContext> options, Ev
 
     public static ModelBuilder AttachEntities(ModelBuilder builder, bool referenceOnly = false)
     {
-        builder.Entity<User>().ToTable("Users", SecurityDbContext.SCHEMA, true);
+        SecurityDbContext.AttachEntities(builder, true);
 
         builder.Entity<Customer>(b =>
         {

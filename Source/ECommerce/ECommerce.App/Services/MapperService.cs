@@ -2,8 +2,11 @@
 
 using AutoMapper;
 using DeltaX.Core.Common;
-using ECommerce.App.Database.Entities;
-using ECommerce.Shared.Entities;
+using ECommerce.App.Database.Entities.Product;
+using ECommerce.App.Database.Entities.Security;
+using ECommerce.Shared.Entities.Product;
+using ECommerce.Shared.Entities.Security;
+using Microsoft.AspNetCore.Identity;
 
 public class MapperService
 {
@@ -20,7 +23,7 @@ public class MapperService
             conf.CreateMap<Seller, SellerDto>().ReverseMap();
             conf.CreateMap<Stock, StockDto>().ReverseMap();
             conf.CreateMap<StockMovement, StockMovementDto>().ReverseMap();
-            conf.CreateMap<User, UserSimpleDto>().ReverseMap();
+            conf.CreateMap<User, UserSimpleDto>().ReverseMap(); 
         });
 
         mapper = config.CreateMapper();
@@ -30,5 +33,7 @@ public class MapperService
     public Pagination<ProductDto> ToDto(Pagination<Product> e) => mapper.Map<Pagination<ProductDto>>(e);
     public SellerDto ToDto(Seller e) => mapper.Map<SellerDto>(e);
     public Pagination<SellerDto> ToDto(Pagination<Seller> e) => mapper.Map<Pagination<SellerDto>>(e);
+    public UserSimpleDto ToDto(User e) => mapper.Map<UserSimpleDto>(e);
+    public Pagination<UserSimpleDto> ToDto(Pagination<User> e) => mapper.Map<Pagination<UserSimpleDto>>(e);
 
 }

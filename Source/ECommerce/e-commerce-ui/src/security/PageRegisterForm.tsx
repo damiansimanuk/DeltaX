@@ -2,19 +2,38 @@ import { Password } from 'primereact/password';
 import { InputText } from 'primereact/inputtext';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import { useEntryPoint } from '../api/context';
 import { useForm, Controller } from "react-hook-form"
-import { Spinner } from '../layout/spinner';
+import { Spinner } from '../layout/Spinner';
+import { useToast } from '../core/message/Context';
+import useUpdateEffect from '../core/hooks/useUpdateEffect';
+import { Link, redirect } from 'react-router-dom';
+import { createStoreEntryPoint } from '../core/api/ContextZ';
+
+const requestStore = createStoreEntryPoint("/security/register", "post");
 
 
 export function PageRegisterForm() {
-    type TState = typeof request.types.body & { confirmPassword: string; }
-    const request = useEntryPoint("/security/register", "post");
-    const { control, handleSubmit, getValues } = useForm<TState>()
+    type TForm = typeof requestStore.types.body & { confirmPassword: string; }
+    const request = requestStore.use();
+    const { control, handleSubmit, getValues } = useForm<TForm>()
+    const toast = useToast()
 
     const onSubmit = handleSubmit(data => {
+        toast?.clear();
         request.fetch({ body: { email: data.email, password: data.password } })
     })
+
+    useUpdateEffect(() => {
+        if (request.errors) {
+            for (const error of request.errors) {
+                toast.show({ severity: 'error', summary: error.message, life: 30000 })
+            }
+        }
+        else {
+            toast.show({ severity: 'success', summary: 'Success', detail: 'Register success', life: 30000 })
+            redirect('/login')
+        }
+    }, [request.done], [toast, request.done])
 
     const header = <div className='p-4'><span className='font-bold text-2xl'>Register</span></div>;
 
@@ -27,6 +46,8 @@ export function PageRegisterForm() {
     return (
         <form onSubmit={onSubmit}>
             <Card className="p-fluid mx-0 mt-0 sm:mt-5 sm:mx-auto sm:max-w-30rem relative" footer={footer} header={header}>
+
+                done:{`'${request.done}'`} - isLoading:{`'${request.isLoading}'`}
 
                 <Spinner loading={request.isLoading} />
 
@@ -86,8 +107,8 @@ export function PageRegisterForm() {
                         </>)}
                     />
 
-                    <div className='pt-3' hidden={request.errors === undefined || request.isLoading}>
-                        {(request.errors?.map((e, i) => <p key={i} className='p-error p-0 m-0 text-sm'>{e.message}</p>))}
+                    <div className="flex justify-content-end mt-3  text-sm">
+                        Ir a <Link className="no-underline cursor-pointer text-blue-300 px-1 font-medium" to='/login'>login</Link>
                     </div>
                 </div>
             </Card >

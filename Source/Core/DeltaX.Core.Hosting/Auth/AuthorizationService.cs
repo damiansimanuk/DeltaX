@@ -47,4 +47,11 @@ public class AuthorizationService(ICurrentUser currentUser, IConfiguration confi
     {
         return ValidateAccessFilteredInternal(filteredPermission, permissions);
     }
+
+
+    public Result<ResultSuccess> ValidateAccessAction(string? resource, params string[] actions)
+    {
+        resource = string.IsNullOrWhiteSpace(resource) ? null : $"resource:{resource}";
+        return ValidateAccessFilteredInternal(resource, actions);
+    }
 }

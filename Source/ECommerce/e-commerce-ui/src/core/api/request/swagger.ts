@@ -148,7 +148,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/Product/productList": {
+    "/security/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["PostSecurityLogout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/Product/productList": {
         parameters: {
             query?: never;
             header?: never;
@@ -164,7 +180,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/Product/product": {
+    "/api/v1/Product/product": {
         parameters: {
             query?: never;
             header?: never;
@@ -180,7 +196,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/Product/sellerList": {
+    "/api/v1/Product/sellerList": {
         parameters: {
             query?: never;
             header?: never;
@@ -196,7 +212,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/Product/seller": {
+    "/api/v1/Product/seller": {
         parameters: {
             query?: never;
             header?: never;
@@ -206,6 +222,70 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["Product_ConfigSeller"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/roleList": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Security_GetRoleList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/role": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Security_ConfigRolePATCH"];
+        trace?: never;
+    };
+    "/security/userList": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Security_GetRoleList2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/user": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["Security_ConfigRolePUT"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -416,19 +496,66 @@ export interface components {
             hasNextPage?: boolean;
             hasPreviousPage?: boolean;
         };
-        ResultOfSellerDto: components["schemas"]["Result"] & {
-            value?: components["schemas"]["SellerDto"] | null;
-        };
-        Result: {
-            errors?: components["schemas"]["Error"][];
-            firstError?: components["schemas"]["Error"] | null;
-            isSuccess?: boolean;
-            isError?: boolean;
-        };
         ConfigSellerRequest: {
             name?: string;
             email?: string;
             phoneNumber?: string;
+        };
+        PaginationOfRoleDto: {
+            /** Format: int32 */
+            rowsPerPage?: number;
+            /** Format: int32 */
+            rowsOffset?: number;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            rowsCount?: number;
+            items?: components["schemas"]["RoleDto"][];
+            /** Format: int32 */
+            pages?: number;
+            hasNextPage?: boolean;
+            hasPreviousPage?: boolean;
+        };
+        RoleDto: {
+            roleId?: string;
+            name?: string;
+            resources?: string[];
+            actions?: string[];
+        };
+        ConfigRoleRequest: {
+            name?: string;
+            resources?: string[];
+            actions?: string[];
+        };
+        PaginationOfUserDto: {
+            /** Format: int32 */
+            rowsPerPage?: number;
+            /** Format: int32 */
+            rowsOffset?: number;
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            rowsCount?: number;
+            items?: components["schemas"]["UserDto"][];
+            /** Format: int32 */
+            pages?: number;
+            hasNextPage?: boolean;
+            hasPreviousPage?: boolean;
+        };
+        UserDto: {
+            userId?: string;
+            userName?: string | null;
+            fullName?: string | null;
+            email?: string;
+            phoneNumber?: string | null;
+            roles?: string[];
+        };
+        ConfigUserRequest: {
+            userName?: string;
+            fullName?: string;
+            email?: string;
+            phoneNumber?: string;
+            roles?: string[];
         };
         ProductCreated: components["schemas"]["IntegrationEventBase"] & {
             /** Format: int32 */
@@ -448,23 +575,39 @@ export interface components {
         };
         /** @enum {string} */
         ShippingStatusEnum: "None" | "Pending" | "Shipped" | "Delivered" | "Returned" | "Cancelled";
-        GetProductRequest: {
+        GetRoleListRequest: {
+            /** Format: int32 */
+            rowsPerPage?: number;
+            /** Format: int32 */
+            rowsOffset?: number | null;
+            /** Format: int32 */
+            page?: number | null;
+        };
+        GetUserListRequest: {
+            /** Format: int32 */
+            rowsPerPage?: number;
+            /** Format: int32 */
+            rowsOffset?: number | null;
+            /** Format: int32 */
+            page?: number | null;
+        };
+        GetProductListRequest: {
             filterText?: string | null;
             /** Format: int32 */
             rowsPerPage?: number;
             /** Format: int32 */
-            rowsOffset?: number;
+            rowsOffset?: number | null;
             /** Format: int32 */
-            page?: number;
+            page?: number | null;
         };
-        GetSellerRequest: {
+        GetSellerListRequest: {
             userId?: string | null;
             /** Format: int32 */
             rowsPerPage?: number;
             /** Format: int32 */
-            rowsOffset?: number;
+            rowsOffset?: number | null;
             /** Format: int32 */
-            page?: number;
+            page?: number | null;
         };
     };
     responses: never;
@@ -760,13 +903,32 @@ export interface operations {
             };
         };
     };
+    PostSecurityLogout: {
+        parameters: {
+            query: {
+                returnUrl: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     Product_GetProduct: {
         parameters: {
             query?: {
-                filterText?: string | null;
+                FilterText?: string | null;
                 RowsPerPage?: number;
-                RowsOffset?: number;
-                Page?: number;
+                RowsOffset?: number | null;
+                Page?: number | null;
             };
             header?: never;
             path?: never;
@@ -820,8 +982,8 @@ export interface operations {
             query?: {
                 userId?: string | null;
                 RowsPerPage?: number;
-                RowsOffset?: number;
-                Page?: number;
+                RowsOffset?: number | null;
+                Page?: number | null;
             };
             header?: never;
             path?: never;
@@ -857,7 +1019,123 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ResultOfSellerDto"];
+                    "application/json": components["schemas"]["SellerDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"][];
+                };
+            };
+        };
+    };
+    Security_GetRoleList: {
+        parameters: {
+            query?: {
+                RowsPerPage?: number;
+                RowsOffset?: number | null;
+                Page?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginationOfRoleDto"];
+                };
+            };
+        };
+    };
+    Security_ConfigRolePATCH: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfigRoleRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoleDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"][];
+                };
+            };
+        };
+    };
+    Security_GetRoleList2: {
+        parameters: {
+            query?: {
+                RowsPerPage?: number;
+                RowsOffset?: number | null;
+                Page?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginationOfUserDto"];
+                };
+            };
+        };
+    };
+    Security_ConfigRolePUT: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfigUserRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"][];
                 };
             };
         };

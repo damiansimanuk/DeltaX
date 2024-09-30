@@ -1,14 +1,14 @@
 import Router from "./Router";
 import { PrimeReactProvider } from 'primereact/api';
-import { ApiProvider } from './api/context';
+import { MessageProvider } from "./core/message/Context";
 
 
 export default function App() {
   return (
     <PrimeReactProvider >
-      <ApiProvider baseUrl="http://localhost:5299" useCookies={true}>
+      <MessageProvider>
         <Router />
-      </ApiProvider>
+      </MessageProvider>
     </PrimeReactProvider>
   );
 }

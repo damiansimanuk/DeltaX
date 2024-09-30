@@ -18,9 +18,9 @@
 }
 
 .spinner-container {
-    background-color: #2227;
+    background-color: rgba(34, 15, 15, 0.256);
     position: absolute;
-    display: flex;
+    display: grid;
     top: 0;
     left: 0;
     width: 100%;

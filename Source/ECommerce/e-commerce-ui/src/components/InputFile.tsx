@@ -1,7 +1,7 @@
 import { ChangeEventHandler, forwardRef, useEffect, useRef, useState } from 'react';
-import { useElementSize } from '../hooks/element-size-hook';
-import mergeRefs from '../hooks/merge-refs';
-import './input-file.css'
+import { useElementSize } from '../core/hooks/useElementSize';
+import mergeRefs from "../core/hooks/mergeRefs";
+import './InputFile.css'
 
 type TInputFile = {
     label: string,

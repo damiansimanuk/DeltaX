@@ -8,19 +8,24 @@ body {
 .main-container {
   display: grid;
   height: 100vh;
-  grid-template-rows: min-content auto min-content;
+  grid-template-rows: min-content min-content auto min-content;
   grid-template-areas:
     "container-header"
+    "container-spinner"
     "container-main"
     "container-footer";
 
-  &>header {
+  & header {
     grid-area: container-header;
     padding: 0.4rem;
     background-color: black;
   }
 
-  &>main.container {
+  & .spinner {
+    grid-area: container-spinner;
+  }
+
+  & main.container {
     grid-area: container-main;
     position: relative;
     height: 100%;
@@ -29,7 +34,7 @@ body {
     overflow-y: auto;
   }
 
-  &>footer {
+  & footer {
     grid-area: container-footer;
     background-color: var(--surface-50);
     padding: 0.4rem;
@@ -77,4 +82,25 @@ button.p-button-icon-only.p-button-rounded {
 .p-panel .p-panel-content,
 .p-panel .p-panel-footer {
   padding: 0.6rem !important;
+}
+
+.p-toast {
+  z-index: 100001;
+}
+
+.nowrap {
+  text-wrap: nowrap;
+}
+
+.p-inputtext[readonly]:enabled:focus,
+.p-inputtext[readonly]:enabled:hover {
+  border-color: rgba(117, 117, 117, 0.5) !important;
+}
+
+.p-autocomplete .p-autocomplete-multiple-container .p-autocomplete-token {
+  margin-right: 0 !important;
+}
+
+.p-datatable.p-datatable-gridlines .p-datatable-scrollable-table>.p-datatable-thead {
+  top: 0px !important;
 }

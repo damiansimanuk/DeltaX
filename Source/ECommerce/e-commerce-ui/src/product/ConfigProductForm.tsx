@@ -1,14 +1,16 @@
 import { InputText } from 'primereact/inputtext';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import { useEntryPoint } from '../api/context';
 import { useForm, Controller, useFieldArray } from "react-hook-form"
-import { Spinner } from '../layout/spinner';
+import { Spinner } from '../layout/Spinner';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primereact/autocomplete';
 import { useState } from 'react';
 import { Panel } from 'primereact/panel';
-import { InputFile } from '../components/input-file';
+import { InputFile } from '../components/InputFile';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { createStoreEntryPoint } from '../core/api/ContextZ';
+
+const requestStore = createStoreEntryPoint("/api/v1/Product/product", "post");
 
 
 const categoriesCatalog = [
@@ -21,10 +23,10 @@ const categoriesCatalog = [
 
 
 export function ConfigProductForm() {
-    type TState = typeof request.types.body;
-    const request = useEntryPoint("/Product/product", "post");
+    type TForm = typeof requestStore.types.body;
+    const request = requestStore.use();
     const [categories, setCategories] = useState(categoriesCatalog);
-    const { control, handleSubmit } = useForm<TState>()
+    const { control, handleSubmit } = useForm<TForm>()
     const details = useFieldArray({ control, name: "details" })
 
     const onSubmit = handleSubmit(data => {
@@ -63,7 +65,7 @@ export function ConfigProductForm() {
         </div>
     </div>;
 
-    const iconAdd = <div className='flex justify-content-end'>
+    const iconAddDetail = <div className='flex justify-content-end'>
         <Button type='button' icon="pi pi-plus"
             className='p-button-text p-button-rounded p-button-success p-0 m-0'
             onClick={(onAddDetail)}
@@ -120,7 +122,7 @@ export function ConfigProductForm() {
                     <Panel
                         className='mt-2'
                         header={(<span>Details</span>)}
-                        icons={iconAdd} >
+                        icons={iconAddDetail} >
                         {details.fields.map((field, index) => {
                             return (
                                 <div key={field.id} className="grid gap-2">

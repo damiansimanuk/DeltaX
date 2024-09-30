@@ -1,6 +1,6 @@
 
 import { paths, components } from "./swagger";
-import { RequestBuilder } from "./request-builder";
+import { RequestBuilder } from "./RequestBuilder";
 
 export type Paths = paths
 export type ProductCreated = components["schemas"]["ProductCreated"]
@@ -20,34 +20,43 @@ export function ApiRequest(baseUrl = "http://localhost:5189", useCookies = false
     let accessToken = localStorage.getItem("accessToken")
 
     async function customFetch<T>(url: string, method: string, body: any) {
-        return fetch(baseUrl + url, {
-            body: JSON.stringify(body),
-            method,
-            credentials: useCookies ? "include" : "omit",
-            mode: "cors",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                ...(useCookies || accessToken == null ? {} : { 'Authorization': `Bearer ${accessToken}` })
-            }
-        }).then(e => parseJson(e) ?? {} as T)
+        return fetch(
+            baseUrl + url,
+            {
+                body: JSON.stringify(body),
+                method,
+                credentials: useCookies ? "include" : "omit",
+                mode: "cors",
+                redirect: 'error',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    ...(useCookies || accessToken == null ? {} : { 'Authorization': `Bearer ${accessToken}` })
+                }
+            })
+            .then(e => parseJson(e))
+            .then(e => e ?? {} as T)
     }
 
     async function parseJson(response: Response) {
-        if (response?.ok) {
-            try {
-                return Number(response.headers.get("content-length")) > 0
-                    ? await response?.json()
-                    : null
-            } catch (error) {
-                return response?.statusText
-            }
-        }
-        let summary = `Error al procesar la solicitud status:${response.status}`
 
-        const resp = response.headers.get("content-type")?.includes("json")
-            ? await response.clone().json()
-            : JSON.parse(await response.clone().text());
+        const isOk = response?.ok ?? false
+        const typeJson = response.headers.get("content-type")?.includes("json") ?? false
+
+        console.log({ isOk, typeJson, headers: response.headers })
+        const respText = await response.text()
+
+        // console.log({ respText })
+
+        const resp = typeJson && respText.length > 0
+            ? JSON.parse(respText)
+            : {}
+
+        if (isOk) {
+            return resp
+        }
+
+        let summary = `Error al procesar la solicitud status:${response.status}`
 
         if (resp.errors) {
             throwError(resp.errors)
@@ -55,18 +64,10 @@ export function ApiRequest(baseUrl = "http://localhost:5189", useCookies = false
         if (resp instanceof Array) {
             throwError(resp)
         }
-
-        let detail = resp?.message
-            ? resp?.message
-            : 'Error al procesar la solicitud. Ver consola de desarrolladores para más información.'
-
-        if (resp?.error) {
-            detail = resp?.error
-        }
+ 
         switch (response?.status) {
             case 0:
-                summary = 'No es posible conectarse con el servidor'
-                detail = undefined
+                summary = 'No es posible conectarse con el servidor' 
                 break
             case 401:
                 summary = 'Usuario no Autenticado'
@@ -136,17 +137,3 @@ export function ApiRequest(baseUrl = "http://localhost:5189", useCookies = false
     }
 }
 
-
-
-var lala = {
-    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-    "title": "One or more validation errors occurred.",
-    "status": 400,
-    "errors":
-    {
-        "PasswordTooShort": ["Passwords must be at least 6 characters."],
-        "PasswordRequiresNonAlphanumeric": ["Passwords must have at least one non alphanumeric character."],
-        "PasswordRequiresDigit": ["Passwords must have at least one digit ('0'-'9')."],
-        "PasswordRequiresUpper": ["Passwords must have at least one uppercase ('A'-'Z')."]
-    }
-}

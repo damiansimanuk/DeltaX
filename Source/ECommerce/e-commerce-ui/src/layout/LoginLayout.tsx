@@ -1,11 +1,11 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 export const LoginLayout: React.FC<{}> = () => {
     return (
         <div className="main-container">
-            {/* <header>
-                Login Layout
-            </header> */}
+            <header className="flex align-items-center align-content-center">
+                <span> <Link to="/">Home</Link> </span>
+            </header>
             <main className="container">
                 <Outlet />
             </main>

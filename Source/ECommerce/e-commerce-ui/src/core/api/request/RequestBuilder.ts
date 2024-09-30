@@ -6,12 +6,12 @@ export type StatusError<T> = { [K in keyof T as K extends 400 | 401 | 403 | 404 
 // npx openapi-typescript swagger.json --output swagger.ts
 // npx openapi-typescript http://localhost:5299/swagger/v1/swagger.json --output swagger.ts
 
-export function RequestBuilder<Paths>(caller: ((url: string, method: string, body: string | null) => Promise<any>) | null = null) {
 
-    function entryPoint<
+export function RequestTypeBuilder<Paths>() {
+    return function <
         Url extends keyof Paths,
         Method extends keyof Omit<OmitNever<Paths[Url]>, "parameters">
-    >(url: Url, method: Method) {
+    >(_url: Url, _method: Method) {
         type P = Required<Paths[Url][Method]>
         type Param = Required<Extract<P, { parameters: any }>['parameters']>
         type Resp = StatusSuccess<Extract<P, { responses: any }>['responses']>
@@ -21,6 +21,31 @@ export function RequestBuilder<Paths>(caller: ((url: string, method: string, bod
         type Body = Extract<Required<P>, { requestBody: { content: { 'application/json': any } } }>['requestBody']['content']['application/json']
         type O = { path: Path; query: Query; body: Body; }
         type Option = Pick<O, keyof OmitNever<O>>
+
+        return {
+            resultStatus: {} as keyof Resp,
+            result: {} as Result,
+            path: {} as Path,
+            query: {} as Query,
+            body: {} as Body,
+            options: {} as Option,
+        }
+    }
+}
+
+export function RequestBuilder<Paths>(caller: ((url: string, method: string, body: string | null) => Promise<any>) | null = null) {
+
+    function entryPoint<
+        Url extends keyof Paths,
+        Method extends keyof Omit<OmitNever<Paths[Url]>, "parameters">
+    >(url: Url, method: Method) {
+        const e = RequestTypeBuilder<Paths>()(url, method);
+        type Option = typeof e.options;
+        type Result = typeof e.result;
+        type Path = typeof e.path;
+        type Query = typeof e.query;
+        type Body = typeof e.body;
+        type Resp = typeof e.resultStatus;
 
         function fetch(options: Option): Promise<Result> {
             return call(caller, options)
@@ -63,12 +88,12 @@ export function RequestBuilder<Paths>(caller: ((url: string, method: string, bod
             method: method as string,
             url: url as string,
             types: {
-                resultStatus: {} as keyof Resp,
+                resultStatus: {} as Resp,
                 result: {} as Result,
                 path: {} as Path,
                 query: {} as Query,
                 body: {} as Body,
-                options: {} as Pick<O, keyof O>,
+                options: {} as Option,
             }
         };
     }

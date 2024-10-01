@@ -7,7 +7,7 @@ import { Spinner } from '../layout/Spinner';
 import { useToast } from '../core/message/Context';
 import useUpdateEffect from '../core/hooks/useUpdateEffect';
 import { Link, redirect } from 'react-router-dom';
-import { createStoreEntryPoint } from '../core/api/ContextZ';
+import { createStoreEntryPoint } from '../core/api/Context';
 
 const requestStore = createStoreEntryPoint("/security/register", "post");
 

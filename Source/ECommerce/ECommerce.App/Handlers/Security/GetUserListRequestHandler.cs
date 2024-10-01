@@ -7,8 +7,6 @@ using ECommerce.App.Services;
 using ECommerce.Shared.Contracts.Security;
 using ECommerce.Shared.Entities.Security;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;

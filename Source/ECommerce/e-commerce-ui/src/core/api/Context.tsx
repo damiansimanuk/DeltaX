@@ -2,8 +2,8 @@ import { ApiRequest, HttpError, Paths } from './request/ApiRequest'
 import { OmitNever, RequestTypeBuilder } from './request/RequestBuilder';
 import { create, useStore } from 'zustand'
 
-const useCookies = true
-const baseUrl = "http://localhost:5299"
+export const useCookies = true
+export const baseUrl = "http://localhost:5299"
 
 type Url = keyof Paths
 type Method<U extends Url> = keyof Omit<OmitNever<Paths[U]>, "parameters">
@@ -21,7 +21,7 @@ type TStoreFetch<To, Td> = {
 
 export const TypeBuilder = RequestTypeBuilder<Paths>();
 
-const context = ApiRequest(baseUrl, useCookies)
+export const context = ApiRequest(baseUrl, useCookies)
 
 export function createStoreEntryPoint<U extends Url, M extends Method<U>>(url: U, method: M) {
     console.log("createStoreEntryPoint")
@@ -33,27 +33,13 @@ export function createStoreEntryPoint<U extends Url, M extends Method<U>>(url: U
     return {
         types,
         store,
+        getState: store.getState,
         use: () => {
             console.log("createStoreEntryPoint use")
             return useStore(store)
         }
     }
 }
-
-export const userInfoStore = createStoreEntryPoint("/security/manage/info", "get")
-userInfoStore.store.getState().fetch({})
-
-export const loginStore = createStoreEntryPoint("/security/login", "post")
-loginStore.store.subscribe((state, prevState) => {
-    if (state.done && state.data?.accessToken !== prevState.data?.accessToken) {
-        context.setAccessToken(state.data.accessToken ?? "")
-        userInfoStore.store.getState().fetch({})
-    }
-    if (useCookies && state.done && !state.isLoading && prevState.isLoading) {
-        userInfoStore.store.getState().fetch({})
-    }
-})
-
 
 export function createStoreFetch<To, Tr>(fetchFunc: ((o: To) => Promise<Tr>)) {
     console.log("createStoreFetch")

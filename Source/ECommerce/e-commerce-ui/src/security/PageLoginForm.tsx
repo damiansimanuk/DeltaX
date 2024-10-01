@@ -7,7 +7,7 @@ import { useForm, useController } from "react-hook-form"
 import { Spinner } from '../layout/Spinner';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../core/message/Context';
-import { loginStore } from '../core/api/ContextZ';
+import { loginStore } from '../core/api/Stores';
 
 type TForm = {
     email: string
@@ -56,7 +56,7 @@ export function PageLoginForm() {
         toast?.clear()
         request.fetch({ body: { email: data.email, password: data.password }, query: { useCookies: true } })
             .then(() => {
-                toast.show({ severity: 'success', summary: "success sig-in", life: 5000 })
+                toast.show({ severity: 'success', summary: "success sig-in", life: 2000 })
                 navigate("/")
             })
             .catch(e => toast.show({ severity: 'error', summary: e.message ?? e[0].message, life: 30000 }))

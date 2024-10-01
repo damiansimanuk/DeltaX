@@ -7,13 +7,12 @@ import { useToast } from '../core/message/Context';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primereact/autocomplete';
 import { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { createStoreEntryPoint } from '../core/api/ContextZ';
-import { roleListStore } from '../core/api/Stores';
+import { createStoreEntryPoint } from '../core/api/Context';
+import { roleListStore, userListStore } from '../core/api/Stores';
 
 type TUser = typeof userListStore.types.result["items"][0]
-type TUserForm = typeof saveUserStore.types.body
-const saveUserStore = createStoreEntryPoint("/security/user", "put")
-const userListStore = createStoreEntryPoint("/security/userList", "get")
+type TUserForm = typeof requestStore.types.body
+const requestStore = createStoreEntryPoint("/security/user", "put") 
 
 export function ConfigUserDialog({ item, onSuccess, onError, onHide }: {
     item: TUser,
@@ -45,7 +44,7 @@ export function ConfigUserForm({ item, onSuccess, onError }: {
     onError?: () => void
 }) {
     const isEdition = item.email && item.email != '';
-    const request = saveUserStore.use();
+    const request = requestStore.use();
     const requestRoles = roleListStore.use()
     const toast = useToast()
     const [allowCreateRole, setAllowCreateRole] = useState(false)

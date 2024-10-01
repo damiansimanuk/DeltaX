@@ -1,7 +1,7 @@
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
-import { createStoreEntryPoint } from '../core/api/ContextZ';
+import { createStoreEntryPoint } from '../core/api/Context';
 import { useForm, useController } from "react-hook-form"
 import { Spinner } from '../layout/Spinner';
 import { useToast } from '../core/message/Context';
@@ -10,8 +10,8 @@ import { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { roleListStore } from '../core/api/Stores';
 
-type TUser = typeof saveRole.types.body
-const saveRole = createStoreEntryPoint("/security/role", "patch")
+type TUser = typeof requestStore.types.body
+const requestStore = createStoreEntryPoint("/security/role", "patch")
 
 export function ConfigRoleDialog({ item, onSuccess, onError, onHide }: {
     item: TUser,
@@ -43,7 +43,7 @@ export function ConfigRoleForm({ item, onSuccess, onError }: {
     onError?: () => void
 }) {
     const isEdition = item.name && item.name != '';
-    const request = saveRole.use();
+    const request = requestStore.use();
     const requestRoles = roleListStore.use()
     const toast = useToast()
     const [resourcesFiltered, setResourcesFiltered] = useState<string[]>([])
@@ -52,6 +52,7 @@ export function ConfigRoleForm({ item, onSuccess, onError }: {
     const [allowCreateActions, setAllowCreateActions] = useState(false)
     const { control, handleSubmit } = useForm<TUser>({
         defaultValues: {
+            roleId: item.roleId ?? null,
             name: item.name ?? null,
             actions: item.actions,
             resources: item.resources,

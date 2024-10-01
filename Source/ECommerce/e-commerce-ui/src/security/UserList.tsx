@@ -25,15 +25,15 @@ export function UserList() {
         </div>
     );
 
-    const onCloseDialog = (r: boolean) => {
+    const onCloseDialog = (success: boolean) => {
         setEditItem(undefined)
-        if (r) {
+        if (success) {
             list.setOptions({ ...list.options });
         }
     }
 
     return (
-        <div className="h-full w-full" ref={elementSize.ref}>
+        <div className="h-full w-full" >
 
             <ConfigUserDialog onSuccess={() => onCloseDialog(true)} onHide={() => onCloseDialog(false)} item={editItem} />
 

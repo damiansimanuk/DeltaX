@@ -1,31 +1,41 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Spinner } from "./Spinner";
 import { Button } from "primereact/button";
-import { useState } from "react";
-import { userInfoStore } from "../core/api/ContextZ";
+import { logout, userInfoStore } from "../core/api/Stores";
 
 export const DefaultLayout: React.FC<{}> = () => {
     const userInfo = userInfoStore.use()
-    const [test, setTest] = useState(false)
-    const isAnonymous = userInfo.done && !userInfo.data?.email
+    const navigate = useNavigate()
+    const isAnonymous = !userInfo.data?.email
+
+    const goToLogin = () => {
+        navigate("security/login")
+    }
 
     return (
         <div className="main-container">
-            <header className="flex align-items-center align-content-center">
-                <span>isLoading:{`${userInfo.isLoading}`} </span>
-                <span>done:{`${userInfo.done}`} </span>
-                <span>isAnonymous:{`${isAnonymous}`} </span>
-                <span>User:{userInfo.data?.email ?? 'Anónimo'} </span>
-                <span>test:{test ? 'true' : 'false'} </span>
-                <span> <Link to="/">Home</Link> </span>
-
-                <Button label="test" onClick={() => setTest(p => !p)} />
-                {/* <Button label="logout" onClick={() => auth.logout({ returnUrl: window.location.pathname })} /> */}
+            <header className="md:flex align-items-center ">
+                <div className="flex align-items-center">
+                    <span>isLoading:{`${userInfo.isLoading}`} </span>
+                    <span>done:{`${userInfo.done}`} </span>
+                    <span>isAnonymous:{`${isAnonymous}`} </span>
+                    <span>User:{userInfo.data?.userName ?? 'Anónimo'} </span>
+                </div>
+                <div className="flex flex-1 align-items-center">
+                    <span> <Link to="/">Home</Link> </span>
+                </div>
+                <div className="flex align-items-center">
+                    <span className="p-2">{userInfo.data?.userName ?? 'Anónimo'} </span>
+                    {isAnonymous
+                        ? <Button label="login" className="mr-1 p-2" icon="pi pi-sign-in" iconPos="right" onClick={goToLogin} />
+                        : <Button label="logout" className="mr-1 p-2" icon="pi pi-power-off" iconPos="right" onClick={() => logout()} />
+                    }
+                </div>
             </header>
 
             <main className="container relative p-2">
                 {/* {(!userInfo.done || userInfo.isLoading ) && <Spinner loading className=" " />} */}
-                <Spinner loading={(!userInfo.done || userInfo.isLoading || test)} className="absolute" />
+                <Spinner loading={(!userInfo.done || userInfo.isLoading)} className="absolute" />
 
                 {userInfo.done && <Outlet />}
             </main>

@@ -292,6 +292,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/security/userInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Security_GetUserInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Security_GetClaims"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -523,6 +555,7 @@ export interface components {
             actions?: string[];
         };
         ConfigRoleRequest: {
+            roleId?: string | null;
             name?: string;
             resources?: string[];
             actions?: string[];
@@ -551,11 +584,20 @@ export interface components {
             roles?: string[];
         };
         ConfigUserRequest: {
-            userName?: string;
-            fullName?: string;
+            userId?: string | null;
+            userName?: string | null;
+            fullName?: string | null;
             email?: string;
-            phoneNumber?: string;
+            phoneNumber?: string | null;
             roles?: string[];
+        };
+        UserInfoDto: {
+            userId?: string;
+            userName?: string | null;
+            fullName?: string | null;
+            email?: string;
+            phoneNumber?: string | null;
+            roles?: components["schemas"]["RoleDto"][];
         };
         ProductCreated: components["schemas"]["IntegrationEventBase"] & {
             /** Format: int32 */
@@ -582,6 +624,9 @@ export interface components {
             rowsOffset?: number | null;
             /** Format: int32 */
             page?: number | null;
+        };
+        GetUserInfoRequest: {
+            userId?: string;
         };
         GetUserListRequest: {
             /** Format: int32 */
@@ -1136,6 +1181,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Error"][];
+                };
+            };
+        };
+    };
+    Security_GetUserInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfoDto"];
+                };
+            };
+        };
+    };
+    Security_GetClaims: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
         };

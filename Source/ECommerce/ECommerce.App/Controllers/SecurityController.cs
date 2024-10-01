@@ -1,11 +1,15 @@
 ﻿namespace ECommerce.App.Controllers;
 
+using Azure.Core;
 using DeltaX.Core.Common;
 using DeltaX.ResultFluent;
+using ECommerce.App.Handlers.Security;
 using ECommerce.Shared.Contracts.Security;
 using ECommerce.Shared.Entities.Security;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [ApiController]
 [Route("/security")]
@@ -37,5 +41,20 @@ public class SecurityController(IMediator mediator) : ControllerBase
     public Task<ActionResult<UserDto>> ConfigRole(ConfigUserRequest request)
     {
         return mediator.RequestAsync(request);
+    }
+
+    [Authorize]
+    [HttpGet("userInfo")]
+    public async Task<ActionResult<UserInfoDto>> GetUserInfo()
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        return await mediator.RequestAsync(new GetUserInfoRequest(id));
+    }
+
+    [Authorize]
+    [HttpGet("claims")]
+    public Dictionary<string, string> GetClaims()
+    {
+        return User.Claims.ToDictionary(k => k.Type, v => v.Value);
     }
 }

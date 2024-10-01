@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Panel } from 'primereact/panel';
 import { InputFile } from '../components/InputFile';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { createStoreEntryPoint } from '../core/api/Context';
+import { createStoreEntryPoint } from '../core/api/Store';
 
 const requestStore = createStoreEntryPoint("/api/v1/Product/product", "post");
 

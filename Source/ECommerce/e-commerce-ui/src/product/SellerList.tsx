@@ -4,7 +4,7 @@ import { DotNestedKeys } from "../core/api/Helper";
 import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { useElementSize } from "../core/hooks/useElementSize";
-import { createStoreEntryPoint } from "../core/api/Context";
+import { createStoreEntryPoint } from "../core/api/Store";
 
 const listStore = createStoreEntryPoint("/api/v1/Product/sellerList", "get");
 

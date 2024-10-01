@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { userInfoStore } from "../core/api/Stores";
+import { userInfoStore } from "../core/api/Shared";
 
 export function ProtectedRoute(props: React.PropsWithChildren<{ redirectPath?: string | undefined, permissions?: string[] | undefined }>) {
     const userInfo = userInfoStore.use();

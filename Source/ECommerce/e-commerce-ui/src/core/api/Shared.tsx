@@ -1,4 +1,4 @@
-import { createStoreEntryPoint, context, useCookies } from "./Context";
+import { createStoreEntryPoint, api, useCookies } from "./Store";
 
 
 export const roleListStore = createStoreEntryPoint("/security/roleList", "get");
@@ -12,7 +12,7 @@ userInfoStore.getState().fetch({})
 
 loginStore.store.subscribe((state, prevState) => {
     if (state.done && state.data?.accessToken !== prevState.data?.accessToken) {
-        context.setAccessToken(state.data.accessToken ?? "")
+        api.setAccessToken(state.data.accessToken ?? "")
         userInfoStore.getState().fetch({})
     }
     if (useCookies && state.done && !state.isLoading && prevState.isLoading) {

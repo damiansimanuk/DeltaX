@@ -7,8 +7,8 @@ import { useToast } from '../core/message/Context';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primereact/autocomplete';
 import { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { createStoreEntryPoint } from '../core/api/Context';
-import { roleListStore, userListStore } from '../core/api/Stores';
+import { createStoreEntryPoint } from '../core/api/Store';
+import { roleListStore, userListStore } from '../core/api/Shared';
 
 type TUser = typeof userListStore.types.result["items"][0]
 type TUserForm = typeof requestStore.types.body

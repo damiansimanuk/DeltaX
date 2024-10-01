@@ -21,13 +21,13 @@ type TStoreFetch<To, Td> = {
 
 export const TypeBuilder = RequestTypeBuilder<Paths>();
 
-export const context = ApiRequest(baseUrl, useCookies)
+export const api = ApiRequest(baseUrl, useCookies)
 
 export function createStoreEntryPoint<U extends Url, M extends Method<U>>(url: U, method: M) {
     console.log("createStoreEntryPoint")
 
     const types = TypeBuilder(url, method);
-    const entryPoint = context.entryPoint(url, method)
+    const entryPoint = api.entryPoint(url, method)
     const store = createStoreFetch(entryPoint.fetch)
 
     return {

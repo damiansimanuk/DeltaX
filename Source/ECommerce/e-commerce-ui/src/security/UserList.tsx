@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { useElementSize } from "../core/hooks/useElementSize";
 import { ConfigUserDialog } from "./ConfigUserForm";
 import { Tag } from "primereact/tag";
-import { userListStore } from "../core/api/Stores";
+import { userListStore } from "../core/api/Shared";
 
 export function UserList() {
     type TItem = typeof list["data"]["items"][0];

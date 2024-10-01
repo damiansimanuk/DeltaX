@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { useForm, Controller } from "react-hook-form"
 import { Spinner } from '../layout/Spinner';
-import { createStoreEntryPoint } from '../core/api/Context';
+import { createStoreEntryPoint } from '../core/api/Store';
 
 const requestStore = createStoreEntryPoint("/api/v1/Product/seller", "post");
 

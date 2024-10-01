@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { useElementSize } from "../core/hooks/useElementSize";
 import { Tag } from "primereact/tag";
 import { ConfigRoleDialog } from "./ConfigRoleForm";
-import { roleListStore } from "../core/api/Stores";
+import { roleListStore } from "../core/api/Shared";
 
 
 export function RoleList() {

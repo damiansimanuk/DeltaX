@@ -7,7 +7,7 @@ import { useForm, useController } from "react-hook-form"
 import { Spinner } from '../layout/Spinner';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../core/message/Context';
-import { loginStore } from '../core/api/Stores';
+import { loginStore } from '../core/api/Shared';
 
 type TForm = {
     email: string

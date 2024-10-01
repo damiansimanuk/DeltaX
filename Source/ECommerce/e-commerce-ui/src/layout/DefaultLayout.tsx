@@ -1,7 +1,7 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Spinner } from "./Spinner";
 import { Button } from "primereact/button";
-import { logout, userInfoStore } from "../core/api/Stores";
+import { logout, userInfoStore } from "../core/api/Shared";
 
 export const DefaultLayout: React.FC<{}> = () => {
     const userInfo = userInfoStore.use()

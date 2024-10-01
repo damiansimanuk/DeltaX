@@ -1,14 +1,14 @@
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Checkbox } from 'primereact/checkbox';
-import { createStoreEntryPoint } from '../core/api/Context';
+import { createStoreEntryPoint } from '../core/api/Store';
 import { useForm, useController } from "react-hook-form"
 import { Spinner } from '../layout/Spinner';
 import { useToast } from '../core/message/Context';
 import { AutoComplete, AutoCompleteCompleteEvent } from 'primereact/autocomplete';
 import { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { roleListStore } from '../core/api/Stores';
+import { roleListStore } from '../core/api/Shared';
 
 type TUser = typeof requestStore.types.body
 const requestStore = createStoreEntryPoint("/security/role", "patch")

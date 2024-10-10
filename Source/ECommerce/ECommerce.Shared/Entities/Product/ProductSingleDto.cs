@@ -2,13 +2,14 @@
 
 using System;
 
-public record ProductDto(
+public record ProductSingleDto(
     int Id,
     string Name,
     string Description,
     SellerDto Seller,
     CategoryDto[] Categories,
     StockDto Stock,
+    ProductDetailDto[] Details,
     bool Active,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);

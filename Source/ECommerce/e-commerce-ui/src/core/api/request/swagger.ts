@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/Product/product/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Product_ConfigProductGET"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/Product/product": {
         parameters: {
             query?: never;
@@ -189,7 +205,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["Product_ConfigProduct"];
+        post: operations["Product_ConfigProductPOST"];
         delete?: never;
         options?: never;
         head?: never;
@@ -324,6 +340,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/security/forgotPassword2": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Security_ForgotPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -420,12 +452,9 @@ export interface components {
             id?: number;
             name?: string;
             description?: string;
-            /** Format: decimal */
-            price?: number;
             seller?: components["schemas"]["SellerDto"];
             categories?: components["schemas"]["CategoryDto"][];
             stock?: components["schemas"]["StockDto"];
-            details?: components["schemas"]["ProductDetailDto"][];
             active?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -467,6 +496,8 @@ export interface components {
             /** Format: int32 */
             quantityAvailable?: number;
             movements?: components["schemas"]["StockMovementDto"][];
+            /** Format: decimal */
+            price?: number;
             active?: boolean;
             /** Format: date-time */
             createdAt?: string;
@@ -487,7 +518,24 @@ export interface components {
         };
         /** @enum {string} */
         StockMovementTypeEnum: "None" | "Sale" | "Restock" | "Return" | "Adjustment";
+        ProductSingleDto: {
+            /** Format: int32 */
+            id?: number;
+            name?: string;
+            description?: string;
+            seller?: components["schemas"]["SellerDto"];
+            categories?: components["schemas"]["CategoryDto"][];
+            stock?: components["schemas"]["StockDto"];
+            details?: components["schemas"]["ProductDetailDto"][];
+            active?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
         ProductDetailDto: {
+            /** Format: int32 */
+            id?: number;
             imageUrl?: string;
             description?: string;
             active?: boolean;
@@ -503,6 +551,8 @@ export interface components {
         };
         ConfigProductRequest: {
             /** Format: int32 */
+            productId?: number | null;
+            /** Format: int32 */
             sellerId?: number;
             name?: string;
             description?: string;
@@ -510,6 +560,8 @@ export interface components {
             details?: components["schemas"]["ConfigProductDetailDto"][];
         };
         ConfigProductDetailDto: {
+            /** Format: int32 */
+            id?: number | null;
             imageUrl?: string;
             description?: string;
         };
@@ -529,6 +581,8 @@ export interface components {
             hasPreviousPage?: boolean;
         };
         ConfigSellerRequest: {
+            /** Format: int32 */
+            sellerId?: number | null;
             name?: string;
             email?: string;
             phoneNumber?: string;
@@ -585,7 +639,6 @@ export interface components {
         };
         ConfigUserRequest: {
             userId?: string | null;
-            userName?: string | null;
             fullName?: string | null;
             email?: string;
             phoneNumber?: string | null;
@@ -635,6 +688,10 @@ export interface components {
             rowsOffset?: number | null;
             /** Format: int32 */
             page?: number | null;
+        };
+        GetProductByIdRequest: {
+            /** Format: int32 */
+            productId?: number;
         };
         GetProductListRequest: {
             filterText?: string | null;
@@ -991,7 +1048,28 @@ export interface operations {
             };
         };
     };
-    Product_ConfigProduct: {
+    Product_ConfigProductGET: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductSingleDto"];
+                };
+            };
+        };
+    };
+    Product_ConfigProductPOST: {
         parameters: {
             query?: never;
             header?: never;
@@ -1009,7 +1087,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductDto"];
+                    "application/json": components["schemas"]["ProductSingleDto"];
                 };
             };
             400: {
@@ -1221,6 +1299,37 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    Security_ForgotPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForgotPasswordRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProblemDetails"];
                 };
             };
         };

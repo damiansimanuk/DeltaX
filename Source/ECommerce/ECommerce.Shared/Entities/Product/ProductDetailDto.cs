@@ -3,6 +3,7 @@
 using System;
 
 public record ProductDetailDto(
+    int Id,
     string ImageUrl,
     string Description,
     bool Active,

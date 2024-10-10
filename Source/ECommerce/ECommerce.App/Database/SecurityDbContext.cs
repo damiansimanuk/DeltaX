@@ -20,18 +20,18 @@ public class SecurityDbContext(DbContextOptions<SecurityDbContext> options) : Id
     {
         builder.Entity<User>(b =>
         {
-            b.ToTable("Users", SCHEMA);
+            b.ToTable("Users", SCHEMA, referenceOnly);
             b.HasKey(s => s.Id);
             b.HasMany(s => s.Roles).WithMany().UsingEntity<IdentityUserRole<string>>();
         }); builder.Entity<Role>(b =>
         {
-            b.ToTable("Roles", SCHEMA);
+            b.ToTable("Roles", SCHEMA, referenceOnly);
             b.HasKey(s => s.Id);
             b.HasMany(s => s.Claims).WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
         });
         builder.Entity<IdentityUserRole<string>>(b =>
         {
-            b.ToTable("UserRoles", SCHEMA);
+            b.ToTable("UserRoles", SCHEMA, referenceOnly);
             b.HasKey(r => new { r.UserId, r.RoleId });
         });
         builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims", SCHEMA, referenceOnly);

@@ -5,13 +5,14 @@ import { DefaultLayout } from "./layout/DefaultLayout";
 import { LoginLayout } from "./layout/LoginLayout";
 import { PageLoginForm } from "./security/PageLoginForm";
 import { PageRegisterForm } from "./security/PageRegisterForm";
-import { PageProductList } from "./product/PageProductList";
+import { ProductList } from "./product/ProductList";
 import { ConfigProductForm } from "./product/ConfigProductForm";
 import { ConfigSellerForm } from "./product/ConfigSellerForm";
 import { SellerList } from "./product/SellerList";
 import { WeatherForecast } from "./pages/WeatherForecast";
 import { UserList } from "./security/UserList";
 import { RoleList } from "./security/RoleList";
+import { PageResetPasswordForm } from "./security/PageResetPasswordForm";
 
 export const router = createBrowserRouter(
     [
@@ -21,7 +22,7 @@ export const router = createBrowserRouter(
                 {
                     path: "/",
                     element: (
-                        <div className="grid gap-4">
+                        <div className="grid gap-4 m-0">
                             <h1>Hello World</h1>
                             <h1 className="text-3xl font-bold underline">
                                 Hello world!
@@ -41,28 +42,27 @@ export const router = createBrowserRouter(
                     element: <WeatherForecast />,
                 },
                 {
-                    path: "product-list",
-                    element: <PageProductList />,
-                },
-                {
-                    path: "config-product",
-                    element: <ConfigProductForm />,
-                },
-                {
-                    path: "config-seller",
-                    element: <ConfigSellerForm />,
-                }, {
-                    path: "seller-list",
-                    element: <SellerList />,
-                },
-                {
                     path: "protected",
                     element: (<ProtectedRoute permissions={["admin"]}>Protected</ProtectedRoute>),
                 },
             ]
         },
         {
-            element: <LoginLayout />,
+            element: <DefaultLayout />,
+            path: "product",
+            children: [
+                {
+                    path: "product-list",
+                    element: <ProductList />,
+                },
+                {
+                    path: "seller-list",
+                    element: <SellerList />,
+                },
+            ]
+        },
+        {
+            element: <DefaultLayout />,
             path: "security",
             children: [
                 {
@@ -86,6 +86,10 @@ export const router = createBrowserRouter(
                     element: <PageRegisterForm />,
                 },
                 {
+                    path: "resetPassword",
+                    element: <PageResetPasswordForm />,
+                },
+                {
                     path: "user-list",
                     element: <UserList />,
                 },
@@ -101,7 +105,7 @@ export const router = createBrowserRouter(
         }
     ],
     {
-        basename: '/e-commerce/ui/'
+        basename: import.meta.env.BASE_URL
     });
 
 export default function Router() {

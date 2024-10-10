@@ -27,8 +27,8 @@ public class AuthorizationService(ICurrentUser currentUser, IConfiguration confi
         }
 
         var claims = currentUser.Principal.FindAll(c => c.Type == "permission" || c.Type == "permissions");
-        claims = filteredPermission is null ? claims : claims.Where(c => c.Value.Contains(filteredPermission));
-        var hasPermissions = claims.Any(c => permissions.Any(v => c.Value.Contains(v)));
+        claims = filteredPermission is null ? claims : claims.Where(c => c.Value.Contains(filteredPermission, StringComparison.InvariantCultureIgnoreCase));
+        var hasPermissions = claims.Any(c => permissions.Any(v => c.Value.Contains(v, StringComparison.InvariantCultureIgnoreCase)));
 
         if (hasPermissions)
         {

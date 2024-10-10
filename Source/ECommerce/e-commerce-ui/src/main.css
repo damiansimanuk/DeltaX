@@ -3,6 +3,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  font-size: 14px;
 }
 
 .main-container {
@@ -15,17 +16,12 @@ body {
     "container-main"
     "container-footer";
 
-  & header {
+  &>header {
     grid-area: container-header;
     padding: 0.4rem;
-    background-color: black;
   }
 
-  & .spinner {
-    grid-area: container-spinner;
-  }
-
-  & main.container {
+  &>main.container {
     grid-area: container-main;
     position: relative;
     height: 100%;
@@ -34,7 +30,7 @@ body {
     overflow-y: auto;
   }
 
-  & footer {
+  &>footer {
     grid-area: container-footer;
     background-color: var(--surface-50);
     padding: 0.4rem;
@@ -103,4 +99,20 @@ button.p-button-icon-only.p-button-rounded {
 
 .p-datatable.p-datatable-gridlines .p-datatable-scrollable-table>.p-datatable-thead {
   top: 0px !important;
+}
+
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.p-tag {
+  font-size: unset;
+}
+
+.p-menubar .p-menuitem>.p-menuitem-content .p-menuitem-link {
+  padding: 0.5rem 1rem;
 }

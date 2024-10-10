@@ -9,6 +9,8 @@ using ECommerce.Shared.Contracts.Product;
 using ECommerce.Shared.Entities.Product;
 using ECommerce.Shared.Events;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 public class ConfigSellerRequestHandler(
     ECommerceDbContext dbContext,
@@ -19,7 +21,7 @@ public class ConfigSellerRequestHandler(
     public async Task<Result<SellerDto>> Handle(ConfigSellerRequest request, CancellationToken cancellationToken)
     {
         var eb = ErrorBuilder.Create()
-            //  .Add(authorization.ValidateAccess(nameof(ConfigSellerRequest)))
+             //  .Add(authorization.ValidateAccess(nameof(ConfigSellerRequest)))
              .Add(string.IsNullOrWhiteSpace(request.Name), Error.InvalidArgument("The 'Name' field cannot be empty."))
              .Add(string.IsNullOrWhiteSpace(request.Email), Error.InvalidArgument("The 'Email' field cannot be empty."))
              .Add(string.IsNullOrWhiteSpace(request.PhoneNumber), Error.InvalidArgument("The 'PhoneNumber' field cannot be empty."));
@@ -30,16 +32,31 @@ public class ConfigSellerRequestHandler(
         }
 
         var user = dbContext.Set<User>().FirstOrDefault(e => e.Id == authorization.CurrentUser.Identifier);
+        var seller = dbContext.Set<Seller>().Include(s => s.Users).FirstOrDefault(e => e.Id == request.SellerId);
 
-        var seller = new Seller
+        if (seller == null)
         {
-            Name = request.Name,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            Users = [user],
-        };
+            seller = new Seller
+            {
+                Name = request.Name,
+                Email = request.Email.Normalize().ToLower(),
+                PhoneNumber = request.PhoneNumber,
+            };
+            dbContext.Add(seller);
+        }
+        else
+        {
+            seller.Name = request.Name;
+            seller.Email = request.Email.Normalize().ToLower();
+            seller.PhoneNumber = request.PhoneNumber;
+            dbContext.Update(seller);
+        }
 
-        dbContext.Add(seller);
+        if (user != null)
+        {
+            seller.Users.Add(user);
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return mapper.ToDto(seller);

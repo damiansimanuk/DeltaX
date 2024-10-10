@@ -1,12 +1,11 @@
 ﻿namespace ECommerce.App.Services;
-
 using AutoMapper;
 using DeltaX.Core.Common;
 using ECommerce.App.Database.Entities.Product;
 using ECommerce.App.Database.Entities.Security;
 using ECommerce.Shared.Entities.Product;
 using ECommerce.Shared.Entities.Security;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 public class MapperService
 {
@@ -20,16 +19,17 @@ public class MapperService
             conf.CreateMap<Category, CategoryDto>().ReverseMap();
             conf.CreateMap<ProductDetail, ProductDetailDto>().ReverseMap();
             conf.CreateMap<Product, ProductDto>().ReverseMap();
+            conf.CreateMap<Product, ProductSingleDto>().ReverseMap();
             conf.CreateMap<Seller, SellerDto>().ReverseMap();
             conf.CreateMap<Stock, StockDto>().ReverseMap();
             conf.CreateMap<StockMovement, StockMovementDto>().ReverseMap();
-            conf.CreateMap<User, UserSimpleDto>().ReverseMap(); 
+            conf.CreateMap<User, UserSimpleDto>().ReverseMap();
         });
 
         mapper = config.CreateMapper();
     }
 
-    public ProductDto ToDto(Product e) => mapper.Map<ProductDto>(e);
+    public ProductSingleDto ToDto(Product e) => mapper.Map<ProductSingleDto>(e);
     public Pagination<ProductDto> ToDto(Pagination<Product> e) => mapper.Map<Pagination<ProductDto>>(e);
     public SellerDto ToDto(Seller e) => mapper.Map<SellerDto>(e);
     public Pagination<SellerDto> ToDto(Pagination<Seller> e) => mapper.Map<Pagination<SellerDto>>(e);

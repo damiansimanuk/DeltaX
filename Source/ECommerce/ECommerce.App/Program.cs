@@ -10,6 +10,11 @@ using DeltaX.Core.Hosting.Remote;
 using Microsoft.AspNetCore.Mvc;
 using ECommerce.Shared.Entities.Product;
 using ECommerce.App.Database.Entities.Security;
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using ECommerce.App.Handlers.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +69,8 @@ builder.Services.AddScoped<ICurrentUser, HttpCurrentUser>();
 builder.Services.AddScoped<AuthorizationService>();
 builder.Services.AddSingleton(s => s.GetRequiredService<ILoggerFactory>().CreateLogger("Default"));
 
+builder.Services.AddScoped<ConfigRoleRequestHandler>();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
 builder.Services.AddSignalR();
 
@@ -90,11 +97,6 @@ app.UsePathBase(app.Configuration.GetValue("RequestPathBase", "/e-commerce/"));
 
 var security = app.MapGroup("/security").WithTags("Security");
 security.MapIdentityApi<User>();
-security.MapPost("/logout", async (SignInManager<User> signInManager, [FromQuery] string returnUrl) =>
-{
-    await signInManager.SignOutAsync();
-    return TypedResults.LocalRedirect(returnUrl ?? "/");
-});
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import "./Spinner.css";
 import { useDebounce } from 'primereact/hooks';
+import { classNames } from "primereact/utils";
 
 export function Spinner(props: React.PropsWithChildren<{
     loading?: boolean,
@@ -25,9 +26,11 @@ export function Spinner(props: React.PropsWithChildren<{
         }
     }, [startDebounced, runningDebounced])
 
+    const visible = running || runningDebounced
+
     return (
-        <div className={"w-full h-full" + props.className}>
-            {(running || runningDebounced) &&
+        <div className={'w-full h-full top-0 left-0 ' + (props.className ?? "")}>
+            {visible &&
                 <div className="spinner-container">
                     <div className="flex flex-column align-items-center">
                         <div className="p-4">

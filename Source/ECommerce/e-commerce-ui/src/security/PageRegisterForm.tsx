@@ -108,7 +108,7 @@ export function PageRegisterForm() {
                     />
 
                     <div className="flex justify-content-end mt-3  text-sm">
-                        Ir a <Link className="no-underline cursor-pointer text-blue-300 px-1 font-medium" to='/login'>login</Link>
+                        Ir a <Link className="no-underline cursor-pointer text-blue-300 px-1 font-medium" to='/security/login'>login</Link>
                     </div>
                 </div>
             </Card >

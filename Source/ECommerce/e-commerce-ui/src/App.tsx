@@ -5,7 +5,7 @@ import { MessageProvider } from "./core/message/Context";
 
 export default function App() {
   return (
-    <PrimeReactProvider >
+    <PrimeReactProvider>
       <MessageProvider>
         <Router />
       </MessageProvider>

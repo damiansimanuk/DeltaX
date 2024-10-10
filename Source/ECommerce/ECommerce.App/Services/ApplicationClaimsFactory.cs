@@ -40,7 +40,7 @@ public class ApplicationClaimsFactory(
         var roles = securityDb.Roles.Where(r => roleIds.Contains(r.Id)).ToList();
         var rolesClaims = securityDb.RoleClaims.Where(rc => roles.Select(r => r.Id).Contains(rc.RoleId)).ToList();
         var userClaims = securityDb.UserClaims.Where(rc => rc.UserId == userId).Select(e => e.ToClaim()).ToList();
-        var customClaims = new[] { "resource", "path", "action", "permission", "permissions" };
+        var customClaims = new[] { "resource", "action", "permission", "permissions" };
 
         result.AddRange(userClaims.Where(c => !customClaims.Contains(c.Type)));
         var permUserClaim = JoinPermissionClaims(userClaims);

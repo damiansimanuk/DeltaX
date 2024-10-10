@@ -5,7 +5,9 @@ import './InputFile.css'
 
 type TInputFile = {
     label: string,
+    dataUrl?: string,
     accept?: string | undefined;
+    className?: string | undefined;
     onBlur?: () => void
     onChange?: ChangeEventHandler<HTMLInputElement> | undefined;
     onFileChanged?: (e: { file: File, dataUrl: string }) => void | undefined;
@@ -16,6 +18,8 @@ export const InputFile = forwardRef<HTMLInputElement, TInputFile>((props, ref) =
     const [file, setFile] = useState<File>()
     const [dataUrl, setDataUrl] = useState<string>()
     const elementSize = useElementSize<HTMLDivElement>({});
+
+    console.log({ dataUrl, d: props.dataUrl })
 
     function readAsBase64(file: File) {
         var reader = new FileReader();
@@ -38,8 +42,12 @@ export const InputFile = forwardRef<HTMLInputElement, TInputFile>((props, ref) =
     }, [file])
 
     useEffect(() => {
-        if (props.onFileChanged) props.onFileChanged({ file, dataUrl })
+        if (props.onFileChanged) props.onFileChanged({ file, dataUrl: dataUrl })
     }, [dataUrl])
+
+    useEffect(() => {
+        setDataUrl(props.dataUrl)
+    }, [props.dataUrl])
 
     async function onFileChanged(e: React.ChangeEvent<HTMLInputElement>) {
         e.preventDefault()
@@ -83,7 +91,7 @@ export const InputFile = forwardRef<HTMLInputElement, TInputFile>((props, ref) =
             onDragEnter={preventDefault}
             onDragLeave={preventDefault}
             style={{ cursor: 'pointer' }}
-            className='input-file relative flex w-full '
+            className={'input-file relative flex w-full ' + (props.className ?? '')}
         >
             <input
                 className='absolute'

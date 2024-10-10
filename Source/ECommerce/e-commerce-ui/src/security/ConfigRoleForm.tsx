@@ -26,13 +26,12 @@ export function ConfigRoleDialog({ item, onSuccess, onError, onHide }: {
             onHide={onHide}
             style={{ width: 'max(800px, 50vw)' }}
             breakpoints={{ '960px': '100vw' }}>
-            {item &&
-                <ConfigRoleForm
-                    item={item}
-                    onSuccess={onSuccess}
-                    onError={onError}
-                />
-            }
+
+            <ConfigRoleForm
+                item={item ?? {}}
+                onSuccess={onSuccess}
+                onError={onError}
+            />
         </Dialog>
     </>
 }
@@ -88,7 +87,6 @@ export function ConfigRoleForm({ item, onSuccess, onError }: {
     })
 
     useEffect(() => {
-        console.log("requestRoles done:", requestRoles.done)
         requestRoles.initialize({ query: { RowsPerPage: 10000 } })
     }, [])
 
@@ -189,7 +187,7 @@ export function ConfigRoleForm({ item, onSuccess, onError }: {
                         {(request.errors?.map(e => <small key={e.code} className='p-error'>{e.message}</small>))}
                     </div>
 
-                    <div className='flex justify-content-end'>
+                    <div className='flex pt-3 justify-content-end'>
                         <div className='flex'>
                             <Button type='submit' label="Save" icon="pi pi-check" />
                         </div>

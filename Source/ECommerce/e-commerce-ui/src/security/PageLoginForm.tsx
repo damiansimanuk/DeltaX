@@ -8,6 +8,7 @@ import { Spinner } from '../layout/Spinner';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../core/message/Context';
 import { loginStore } from '../core/api/Shared';
+import { RecoverPasswordDialog } from './RecoverPasswordDialog';
 
 type TForm = {
     email: string
@@ -94,14 +95,13 @@ export function PageLoginForm() {
                             <Checkbox inputId={rememberMeField.name} checked={rememberMeField.value} {...rememberMeField} className="mr-2"></Checkbox>
                             <label htmlFor="rememberMe">Recordar</label>
                         </div>
-                        <a className="no-underline ml-2 text-right cursor-pointer text-sm text-blue-300 font-medium">
-                            Recuperar contraseña
-                        </a>
+
+                        <RecoverPasswordDialog />
                     </div>
 
                     <div className="flex justify-content-end mt-3  text-sm">
                         ¿Desea
-                        <Link className="no-underline cursor-pointer text-blue-300 px-1 font-medium" to='/register'>registrarse</Link>
+                        <Link className="no-underline cursor-pointer text-blue-300 px-1 font-medium" to='/security/register'>registrarse</Link>
                         con una nueva cuenta?
                     </div>
 

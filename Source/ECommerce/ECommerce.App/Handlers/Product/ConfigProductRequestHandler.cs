@@ -1,5 +1,6 @@
 ﻿namespace ECommerce.App.Handlers.Product;
 
+using DeltaX.Core.Abstractions;
 using DeltaX.Core.Hosting.Auth;
 using DeltaX.ResultFluent;
 using ECommerce.App.Database;
@@ -16,12 +17,12 @@ public class ConfigProductRequestHandler(
     ECommerceDbContext dbContext,
     AuthorizationService authorization,
     MapperService mapper
-    ) : IRequestHandler<ConfigProductRequest, Result<ProductDto>>
+    ) : IRequestHandler<ConfigProductRequest, Result<ProductSingleDto>>
 {
-    public async Task<Result<ProductDto>> Handle(ConfigProductRequest request, CancellationToken cancellationToken)
+    public async Task<Result<ProductSingleDto>> Handle(ConfigProductRequest request, CancellationToken cancellationToken)
     {
         var eb = ErrorBuilder.Create()
-            // .Add(authorization.ValidateAccess(nameof(ConfigProductRequest)))
+            .Add(authorization.ValidateAccessAction($"sellerId:{request.SellerId}", nameof(ConfigProductRequest)))
             .Add(string.IsNullOrWhiteSpace(request.Name), Error.InvalidArgument("The 'Name' field cannot be empty."))
             .Add(string.IsNullOrWhiteSpace(request.Description), Error.InvalidArgument("The 'Description' field cannot be empty."))
             .Add(request.SellerId <= 0, Error.InvalidArgument("The 'SellerId' field cannot be less than or equal to 0."));
@@ -37,15 +38,37 @@ public class ConfigProductRequestHandler(
             return Error.InvalidArgument($"No se encontró el vendedor con SellerId = {request.SellerId}");
         }
 
+        var product = dbContext.Set<Product>()
+            .Include(e => e.Categories)
+            .Include(e => e.Details)
+            .FirstOrDefault(e => e.Id == request.ProductId);
+
+        if (product != null && product.SellerId != request.SellerId)
+        {
+            return Error.InvalidArgument($"El producto con ProductId = {request.ProductId} no pertenece al vendedor con SellerId = {request.SellerId}");
+        }
+
+        var requestCategories = request.Categories?.Select(e => e.ToUpper()).ToList() ?? [];
+
         var existentCategories = dbContext.Set<Category>()
-            .Where(e => request.Categories.Contains(e.Name))
-            .ToList();
-        var newsCategories = request.Categories
-            .Where(e => !existentCategories.Any(c => c.Name == e))
-            .Select(e => new Category { Name = e })
+            .Where(e => requestCategories.Contains(e.NormalizedName))
             .ToList();
 
-        var details = request.Details
+        Merge(existentCategories, product?.Categories ?? [], requestCategories, (e, c) => e.NormalizedName == c,
+            out var toRelationCategory, out var toAddCategoryRaw, out var toDeleteCategory);
+
+        Merge([], product?.Details ?? [], request.Details, (e, c) => e.Id == c.Id,
+            out _, out var toAddDetailRaw, out var toDeleteDetail);
+
+        var toAddCategory = toAddCategoryRaw
+            .Select(e => new Category
+            {
+                Name = e,
+                NormalizedName = e.ToUpper()
+            })
+            .ToList();
+
+        var toAddDetail = toAddDetailRaw
             .Select(d => new ProductDetail
             {
                 ImageUrl = d.ImageUrl,
@@ -53,33 +76,56 @@ public class ConfigProductRequestHandler(
             })
             .ToList();
 
-        var product = dbContext.Set<Product>().Include(e => e.Categories)
-            .FirstOrDefault(e => e.Name == request.Name && e.SellerId == request.SellerId);
-
         if (product == null)
         {
             product = new Product
             {
+                Seller = seller,
                 Name = request.Name,
                 Description = request.Description,
-                Seller = seller,
-                Categories = [.. existentCategories, .. newsCategories],
-                Details = details,
+                Categories = [.. toRelationCategory, .. toAddCategory],
+                Details = [.. toAddDetail],
             };
+            dbContext.Add(product);
         }
         else
         {
             product.Description = request.Description;
-            product.Categories = [.. existentCategories, .. newsCategories];
-            product.Details = details;
+            product.Details.RemoveAll(e => toDeleteDetail.Any(d => d.Id == e.Id));
+            product.Details.AddRange(toAddDetail);
+            product.Categories.RemoveAll(c => toDeleteCategory.Any(dc => dc.Id == c.Id));
+            product.Categories.AddRange(toRelationCategory);
+            product.Categories.AddRange(toAddCategory);
+
+            dbContext.Update(product);
         }
 
         dbContext.AddDomainEvent(() => new ProductCreated(product.Id, product.Name, product.Description));
-        dbContext.AddRange(newsCategories);
-        dbContext.Add(product);
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return mapper.ToDto(product);
+    }
+
+    void Merge<T, TC>(
+        IEnumerable<T> existent,
+        IEnumerable<T> configured,
+        IEnumerable<TC> expected,
+        Func<T, TC, bool> comparer,
+        out List<T> toRelation,
+        out List<TC> toAddRaw,
+        out List<T> toDelete)
+    {
+        toRelation = existent
+            .Where(e => expected.Any(c => comparer(e, c)) && !configured.Any(c => c!.Equals(e)))
+            .ToList();
+
+        toAddRaw = expected
+            .Where(es => !existent.Any(et => comparer(et, es)) && !configured.Any(et => comparer(et, es)))
+            .ToList();
+
+        toDelete = configured
+            .Where(e => !expected.Any(c => comparer(e, c)))
+            .ToList();
     }
 }

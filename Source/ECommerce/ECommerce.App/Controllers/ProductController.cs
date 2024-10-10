@@ -17,10 +17,16 @@ public class ProductController(IMediator mediator) : ControllerBase
         return await mediator.Send(request);
     }
 
+    [HttpGet("product/{productId}")]
+    public Task<ProductSingleDto> ConfigProduct(int productId)
+    {
+        return mediator.Send(new GetProductByIdRequest(productId));
+    }
+
     [HttpPost("product")]
-    [ProducesResponseType<ProductDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProductSingleDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<Error[]>(StatusCodes.Status400BadRequest)]
-    public Task<ActionResult<ProductDto>> ConfigProduct(ConfigProductRequest request)
+    public Task<ActionResult<ProductSingleDto>> ConfigProduct(ConfigProductRequest request)
     {
         return mediator.RequestAsync(request);
     }

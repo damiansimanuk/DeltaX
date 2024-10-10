@@ -9,10 +9,11 @@ import { useState, useEffect } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { createStoreEntryPoint } from '../core/api/Store';
 import { roleListStore, userListStore } from '../core/api/Shared';
+import { Tag } from 'primereact/tag';
 
 type TUser = typeof userListStore.types.result["items"][0]
 type TUserForm = typeof requestStore.types.body
-const requestStore = createStoreEntryPoint("/security/user", "put") 
+const requestStore = createStoreEntryPoint("/security/user", "put")
 
 export function ConfigUserDialog({ item, onSuccess, onError, onHide }: {
     item: TUser,
@@ -27,13 +28,12 @@ export function ConfigUserDialog({ item, onSuccess, onError, onHide }: {
             onHide={onHide}
             style={{ width: 'max(800px, 50vw)' }}
             breakpoints={{ '960px': '100vw' }}>
-            {item &&
-                <ConfigUserForm
-                    item={item}
-                    onSuccess={onSuccess}
-                    onError={onError}
-                />
-            }
+
+            <ConfigUserForm
+                item={item ?? {}}
+                onSuccess={onSuccess}
+                onError={onError}
+            />
         </Dialog>
     </>
 }
@@ -52,7 +52,6 @@ export function ConfigUserForm({ item, onSuccess, onError }: {
     const { control, handleSubmit } = useForm<TUserForm>({
         defaultValues: {
             email: item.email,
-            userName: item.userName ?? null,
             fullName: item.fullName ?? null,
             phoneNumber: item.phoneNumber ?? "123",
             roles: item.roles,
@@ -70,13 +69,6 @@ export function ConfigUserForm({ item, onSuccess, onError }: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                 message: "Invalid email address"
             }
-        }
-    })
-    const userName = useController({
-        control,
-        name: 'userName',
-        rules: {
-            minLength: 2,
         }
     })
     const fullName = useController({
@@ -150,12 +142,6 @@ export function ConfigUserForm({ item, onSuccess, onError }: {
                     <small className='p-error'>{email.fieldState.error?.message}</small>
 
                     <span className="p-float-label mt-5">
-                        <InputText id="userName" {...userName.field} autoComplete='off' type='text' />
-                        <label htmlFor="userName">User Name</label>
-                    </span>
-                    <small className='p-error'>{userName.fieldState.error?.message}</small>
-
-                    <span className="p-float-label mt-5">
                         <InputText id="fullName" {...fullName.field} autoComplete='off' type='text' />
                         <label htmlFor="fullName">Full Name</label>
                     </span>
@@ -187,7 +173,7 @@ export function ConfigUserForm({ item, onSuccess, onError }: {
                         {(request.errors?.map(e => <small key={e.code} className='p-error'>{e.message}</small>))}
                     </div>
 
-                    <div className='flex justify-content-end'>
+                    <div className='flex pt-3 justify-content-end'>
                         <div className='flex'>
                             <Button type='submit' label="Save" icon="pi pi-check" />
                         </div>

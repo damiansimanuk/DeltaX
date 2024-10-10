@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.App.Migrations.ECommerceDb
 {
     [DbContext(typeof(ECommerceDbContext))]
-    [Migration("20240928133251_updateECommerce")]
-    partial class updateECommerce
+    [Migration("20241003202111_InitialECommerce")]
+    partial class InitialECommerce
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -403,6 +403,10 @@ namespace ECommerce.App.Migrations.ECommerceDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -631,7 +635,10 @@ namespace ECommerce.App.Migrations.ECommerceDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", "Security");
+                    b.ToTable("Roles", "Security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("ECommerce.App.Database.Entities.Security.User", b =>
@@ -686,7 +693,10 @@ namespace ECommerce.App.Migrations.ECommerceDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", "Security");
+                    b.ToTable("Users", "Security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -754,7 +764,10 @@ namespace ECommerce.App.Migrations.ECommerceDb
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", "Security");
+                    b.ToTable("UserRoles", "Security", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("CategoryProduct", b =>

@@ -12,8 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 public class GetUserListRequestHandler(
-    SecurityDbContext dbContext,
-    MapperService mapper
+    SecurityDbContext dbContext
     ) : IRequestHandler<GetUserListRequest, Pagination<UserDto>>
 {
     public async Task<Pagination<UserDto>> Handle(GetUserListRequest request, CancellationToken cancellationToken)

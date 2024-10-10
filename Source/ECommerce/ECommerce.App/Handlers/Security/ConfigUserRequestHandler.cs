@@ -9,21 +9,24 @@ using ECommerce.Shared.Contracts.Security;
 using ECommerce.Shared.Entities.Security;
 using Humanizer;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
 public class ConfigUserRequestHandler(
     SecurityDbContext dbContext,
-    AuthorizationService authorization
+    AuthorizationService authorization,
+    IUserStore<User> userStore,
+    UserManager<User> userManager
 ) : IRequestHandler<ConfigUserRequest, Result<UserDto>>
 {
     public async Task<Result<UserDto>> Handle(ConfigUserRequest request, CancellationToken cancellationToken)
     {
         var eb = ErrorBuilder.Create()
             // .Add(authorization.ValidateAccess(nameof(ConfigRoleRequest)))
-            .Add(string.IsNullOrWhiteSpace(request.UserName), Error.InvalidArgument("The 'UserName' field cannot be empty."))
             .Add(string.IsNullOrWhiteSpace(request.Email), Error.InvalidArgument("The 'Email' field cannot be empty."))
+            .Add(string.IsNullOrWhiteSpace(request.FullName), Error.InvalidArgument("The 'FullName' field cannot be empty."))
             .Add(request.Roles == null, Error.InvalidArgument("The 'Roles' field cannot be null."));
 
         if (eb.HasError)
@@ -31,7 +34,8 @@ public class ConfigUserRequestHandler(
             return eb.GetErrors();
         }
 
-        var user = dbContext.Set<User>().Include(u => u.Roles).FirstOrDefault(e => e.Email == request.Email);
+        var email = userManager.NormalizeEmail(request.Email);
+        var user = dbContext.Set<User>().Include(e => e.Roles).FirstOrDefault(u => u.NormalizedEmail == email);
         if (user == null)
         {
             return Error.InvalidArgument("The 'Email' is not registered.");
@@ -48,12 +52,12 @@ public class ConfigUserRequestHandler(
             .Select(e => new Role { Name = e, NormalizedName = e.Normalize() })
             .ToList();
 
-        user.UserName = request.UserName ?? user.UserName;
-        user.NormalizedUserName = request.UserName?.Normalize() ?? user.NormalizedUserName;
+        await userStore.SetUserNameAsync(user, request.Email, cancellationToken);
+        var emailStore = (IUserEmailStore<User>)userStore;
+        await emailStore.SetEmailAsync(user, request.Email, cancellationToken);
+
         user.FullName = request.FullName?.Normalize() ?? user.FullName;
-        user.Email = request.Email ?? user.Email;
-        user.NormalizedEmail = request.Email?.ToUpper() ?? user.NormalizedEmail;
-        user.EmailConfirmed = !string.IsNullOrWhiteSpace(request.Email) || user.EmailConfirmed;
+        user.EmailConfirmed = true;
         user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
 
         user.Roles.AddRange(existentRoles);

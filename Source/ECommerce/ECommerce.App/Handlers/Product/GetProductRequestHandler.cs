@@ -19,7 +19,6 @@ public class GetProductRequestHandler(
         var query = dbContext.Set<Product>()
             .Include(e => e.Categories)
             .Include(e => e.Seller)
-            .Include(e => e.Details)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.FilterText))

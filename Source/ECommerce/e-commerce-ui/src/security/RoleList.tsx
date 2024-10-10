@@ -17,7 +17,7 @@ export function RoleList() {
     const [editItem, setEditItem] = useState<TItem>();
 
     useEffect(() => {
-        list.initialize({ query: { RowsPerPage: 10000 } });
+        list.initialize({ query: { RowsPerPage: 10000 } }, 600);
     }, []);
 
     const header = (

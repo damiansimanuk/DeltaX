@@ -6,7 +6,6 @@ using MediatR;
 
 public record ConfigUserRequest(
     string? UserId,
-    string? UserName,
     string? FullName,
     string Email,
     string? PhoneNumber,

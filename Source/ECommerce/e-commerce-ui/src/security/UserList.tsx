@@ -16,7 +16,7 @@ export function UserList() {
     const [editItem, setEditItem] = useState<TItem>();
 
     useEffect(() => {
-        list.initialize({ query: { RowsPerPage: 10000 } });
+        list.initialize({ query: { RowsPerPage: 10000 } }, 600);
     }, []);
 
     const header = (
@@ -55,7 +55,8 @@ export function UserList() {
                         className="nowrap font-bold p-0 px-2 bg-bluegray-900 border-right-1"
                         headerClassName="bg-bluegray-900 border-right-1"
                     />
-                    <Column header="Email" field={N("email")} style={{ minWidth: '300px' }}
+                    <Column header="Email" field={N("email")}
+                        style={{ minWidth: '300px' }}
                         className='text-cyan-200 border-left-none p-0 px-2'
                         headerClassName="border-left-none"
                     />
@@ -67,7 +68,7 @@ export function UserList() {
                         style={{ minWidth: '300px' }}
                         className="m-0 p-0 px-2"
                         body={(r: TItem) => <>
-                            {r.roles.map(e => (<Tag key={e} value={e} className="nowrap mr-1" > </Tag>))}
+                            {r.roles.map(e => (<Tag key={e} value={e} className="nowrap mr-1"> </Tag>))}
                         </>}
                     />
                     <Column header="Phone" field={N("phoneNumber")}
